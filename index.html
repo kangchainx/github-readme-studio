@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ReadMe.forge - Visual GitHub Profile Builder</title>
+    <!-- Tailwind with Typography Plugin -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    
+    <!-- GitHub Markdown CSS for accurate Preview -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.0/github-markdown.min.css" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --background: #09090b;
+        --surface: #18181b;
+        --surface-hover: #27272a;
+        --border: #27272a;
+        --foreground: #f4f4f5;
+        --muted: #a1a1aa;
+        --primary: #3b82f6;
+      }
+
+      html.light {
+        --background: #ffffff;
+        --surface: #f4f4f5;
+        --surface-hover: #e4e4e7;
+        --border: #e4e4e7;
+        --foreground: #09090b;
+        --muted: #71717a;
+        --primary: #2563eb;
+      }
+
+      body { font-family: 'Inter', sans-serif; }
+      code, pre { font-family: 'JetBrains Mono', monospace; }
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar { width: 8px; height: 8px; }
+      ::-webkit-scrollbar-track { background: var(--background); }
+      ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--surface-hover); }
+      
+      /* Force dark mode styles for markdown-body when parent has 'dark' class context, if needed override */
+      /* Since github-markdown-css uses media queries, we might need manual overrides if we want to toggle via class */
+      html.light .markdown-body {
+        color-scheme: light;
+        --color-canvas-default: #ffffff;
+        --color-canvas-subtle: #f6f8fa;
+        --color-border-default: #d0d7de;
+        --color-border-muted: #d8dee4;
+        --color-neutral-muted: rgba(175, 184, 193, 0.2);
+        --color-accent-fg: #0969da;
+        --color-fg-default: #24292f;
+        --color-fg-muted: #57606a;
+      }
+      
+      /* Default to dark if not light class */
+      html:not(.light) .markdown-body {
+        color-scheme: dark;
+        --color-canvas-default: #0d1117;
+        --color-canvas-subtle: #161b22;
+        --color-border-default: #30363d;
+        --color-border-muted: #21262d;
+        --color-neutral-muted: rgba(110, 118, 129, 0.4);
+        --color-accent-fg: #58a6ff;
+        --color-fg-default: #c9d1d9;
+        --color-fg-muted: #8b949e;
+      }
+      
+      /* Ensure markdown body background is transparent to blend with our canvas */
+      .markdown-body {
+        background-color: transparent !important;
+        font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji" !important;
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              background: 'var(--background)',
+              surface: 'var(--surface)',
+              'surface-hover': 'var(--surface-hover)',
+              border: 'var(--border)',
+              foreground: 'var(--foreground)',
+              muted: 'var(--muted)',
+              primary: 'var(--primary)',
+              'primary-foreground': '#ffffff',
+            }
+          }
+        }
+      }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "zustand": "https://esm.sh/zustand@^5.0.9",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "uuid": "https://esm.sh/uuid@^13.0.0",
+    "marked": "https://esm.sh/marked@12.0.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "@dnd-kit/sortable": "https://esm.sh/@dnd-kit/sortable@^10.0.0",
+    "@dnd-kit/core": "https://esm.sh/@dnd-kit/core@^6.3.1",
+    "@dnd-kit/utilities": "https://esm.sh/@dnd-kit/utilities@^3.2.2",
+    "@phosphor-icons/react": "https://esm.sh/@phosphor-icons/react@^2.1.10"
+  }
+}
+</script>
+</head>
+  <body class="bg-background text-foreground overflow-hidden transition-colors duration-200">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
