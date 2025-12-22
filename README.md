@@ -6,7 +6,6 @@ A visual, drag-and-drop builder for creating GitHub Profile READMEs.
 
 **Prerequisites:** Node.js
 
-
 1. Install dependencies:
    `npm install`
 2. Run the app:
