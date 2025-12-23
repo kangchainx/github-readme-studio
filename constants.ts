@@ -3,6 +3,7 @@ import { ComponentDefinition, ComponentType } from './types';
 export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
   {
     type: ComponentType.HEADER,
+    category: 'basic',
     label: 'Header / Hero',
     icon: 'TextH',
     description: 'Main title and introduction with a wave animation.',
@@ -15,7 +16,8 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
   },
   {
     type: ComponentType.TEXT_WITH_IMAGE,
-    label: 'Text w/ Image',
+    category: 'advanced',
+    label: 'Text / Image',
     icon: 'Article',
     description: 'Text block side-by-side with an image or GIF.',
     defaultProps: {
@@ -28,7 +30,19 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
     }
   },
   {
+    type: ComponentType.PROJECT_DEMO,
+    category: 'advanced',
+    label: 'Project Demo',
+    icon: 'PlayCircle',
+    description: 'Centered GIF showcase with a preset layout.',
+    defaultProps: {
+      gifUrl: 'https://media.giphy.com/media/cfuL5gqFDreXxkWQ4o/giphy.gif',
+      width: 'full',
+    }
+  },
+  {
     type: ComponentType.STATS,
+    category: 'advanced',
     label: 'GitHub Stats',
     icon: 'ChartBar',
     description: 'Display dynamic GitHub statistics, streaks, and languages.',
@@ -45,6 +59,7 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
   },
   {
     type: ComponentType.TECH_STACK,
+    category: 'advanced',
     label: 'Tech Stack',
     icon: 'Stack',
     description: 'Showcase your skills with badges.',
@@ -56,6 +71,7 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
   },
   {
     type: ComponentType.SOCIALS,
+    category: 'advanced',
     label: 'Social Links',
     icon: 'ShareNetwork',
     description: 'Link to your other profiles.',
@@ -70,6 +86,7 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
   },
   {
     type: ComponentType.TEXT,
+    category: 'basic',
     label: 'Text Block',
     icon: 'TextT',
     description: 'A simple paragraph of text.',
@@ -80,6 +97,7 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
   },
   {
     type: ComponentType.IMAGE,
+    category: 'basic',
     label: 'Image',
     icon: 'Image',
     description: 'Embed an image or GIF.',
@@ -93,6 +111,7 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
   },
   {
     type: ComponentType.MARKDOWN,
+    category: 'basic',
     label: 'Raw Markdown',
     icon: 'Code',
     description: 'Write custom markdown directly.',

@@ -69,6 +69,11 @@ export const renderComponentContent = (component: ComponentInstance, globalUsern
       }
     }
 
+    case ComponentType.PROJECT_DEMO: {
+      if (!props.gifUrl) return '';
+      return `<div align="center">\n  <h3>Project Demo</h3>\n  <img src="${props.gifUrl}" alt="Project Demo" width="100%" />\n</div>`;
+    }
+
     case ComponentType.STATS: {
       const targetUsername = (props.useGlobalUsername && globalUsername) ? globalUsername : (props.username || 'github');
       const { theme, hideBorder, showIcons, showRank, variant } = props;

@@ -8,6 +8,7 @@ export enum ComponentType {
   SOCIALS = 'socials',
   IMAGE = 'image',
   MARKDOWN = 'markdown',
+  PROJECT_DEMO = 'project_demo',
 }
 
 // Global Editor Modes
@@ -28,6 +29,7 @@ export interface ComponentInstance {
 // Configuration for the component library (Left Sidebar)
 export interface ComponentDefinition {
   type: ComponentType;
+  category: 'basic' | 'advanced';
   label: string;
   icon: string; // Icon name for display
   description: string;
