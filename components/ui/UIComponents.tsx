@@ -13,7 +13,7 @@ export const Button: React.FC<ButtonProps> = ({ className = '', variant = 'prima
     primary: "bg-primary text-primary-foreground hover:opacity-90",
     secondary: "bg-surface border border-border hover:bg-surface-hover text-foreground",
     ghost: "hover:bg-surface-hover text-muted hover:text-foreground",
-    danger: "bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20"
+    danger: "bg-red-500 text-white shadow-md shadow-red-500/20 hover:bg-red-600"
   };
 
   const sizes = {

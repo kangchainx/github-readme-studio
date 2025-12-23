@@ -2,7 +2,14 @@ import React, { useState } from 'react';
 import { useStore } from '../../store';
 import { ComponentType } from '../../types';
 import { Button, Input, Label, Textarea, Select } from '../ui/UIComponents';
-import * as PhosphorIcons from '@phosphor-icons/react';
+import { 
+  TrashIcon, 
+  XIcon, 
+  CursorClickIcon,
+  MagnifyingGlassIcon,
+  CheckIcon,
+  FadersIcon
+} from '@phosphor-icons/react';
 import { BADGE_STYLES, GITHUB_THEMES } from '../../constants';
 import { TECH_CATEGORIES, ALL_TECHS } from '../../data/techStack';
 import { generateBadgeUrl } from '../../lib/markdown';
@@ -16,7 +23,7 @@ const Inspector = () => {
   if (!selectedComponent) {
     return (
       <div className="w-80 border-l border-border bg-background flex flex-col items-center justify-center text-muted p-6 text-center">
-        <PhosphorIcons.CursorClick size={32} className="mb-3 opacity-50" />
+        <CursorClickIcon size={32} className="mb-3 opacity-50" />
         <p className="text-sm">Select a component on the canvas to edit its properties.</p>
       </div>
     );
@@ -257,7 +264,7 @@ const Inspector = () => {
                       className="h-6" 
                     />
                     <div className="absolute inset-0 bg-red-900/80 items-center justify-center rounded opacity-0 group-hover:opacity-100 flex transition-opacity">
-                      <PhosphorIcons.X size={12} className="text-white" weight="bold" />
+                      <XIcon size={12} className="text-white" weight="bold" />
                     </div>
                   </button>
                 ))}
@@ -268,7 +275,7 @@ const Inspector = () => {
             <div className="space-y-2 mt-4 pt-4 border-t border-border">
                <Label>Add Technologies</Label>
                <div className="relative">
-                 <PhosphorIcons.MagnifyingGlass className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted" size={14} />
+                 <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted" size={14} />
                  <Input 
                    value={techSearch} 
                    onChange={(e) => setTechSearch(e.target.value)} 
@@ -287,7 +294,7 @@ const Inspector = () => {
                           className={`w-full text-left px-3 py-2 rounded text-xs flex items-center justify-between ${activeTechs.includes(tech) ? 'bg-primary/20 text-primary' : 'hover:bg-surface-hover text-foreground'}`}
                         >
                           <span>{tech}</span>
-                          {activeTechs.includes(tech) && <PhosphorIcons.Check size={12} />}
+                          {activeTechs.includes(tech) && <CheckIcon size={12} />}
                         </button>
                       ))}
                       {ALL_TECHS.filter(t => t.toLowerCase().includes(techSearch.toLowerCase())).length === 0 && (
@@ -345,6 +352,21 @@ const Inspector = () => {
           </>
         );
 
+      case ComponentType.PROJECT_DEMO:
+        return (
+          <>
+            <div className="space-y-2">
+              <Label>GIF URL</Label>
+              <Input
+                value={props.gifUrl}
+                onChange={(e) => handleChange('gifUrl', e.target.value)}
+                placeholder="https://media.giphy.com/media/..."
+              />
+            </div>
+            {renderWidthSelector()}
+          </>
+        );
+
       case ComponentType.SOCIALS:
         return (
            <div className="space-y-4">
@@ -381,7 +403,7 @@ const Inspector = () => {
                      }}
                      className="text-muted hover:text-red-400 p-1"
                    >
-                     <PhosphorIcons.TrashSimple size={14} />
+                     <TrashIcon size={14} />
                    </button>
                 </div>
               ))}
@@ -421,17 +443,17 @@ const Inspector = () => {
     <div className="w-80 border-l border-border bg-background flex flex-col h-full overflow-hidden">
       <div className="p-4 border-b border-border flex items-center justify-between">
         <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <PhosphorIcons.Faders size={18} />
+          <FadersIcon size={18} />
           Properties
         </h2>
         <Button 
           variant="danger" 
           size="sm"
-          className="h-7 w-7 p-0"
+          className="h-9 w-9 p-0 flex items-center justify-center transition-all hover:scale-105 active:scale-95"
           onClick={() => removeComponent(selectedComponent.id)}
           title="Remove Component"
         >
-          <PhosphorIcons.TrashSimple size={14} />
+          <TrashIcon size={22} weight="fill" />
         </Button>
       </div>
       
