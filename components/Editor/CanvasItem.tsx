@@ -1,9 +1,8 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { ComponentInstance, ComponentType } from '../../types';
 import { useStore } from '../../store';
-import * as PhosphorIcons from '@phosphor-icons/react';
+import { UserCircleIcon } from '@phosphor-icons/react';
 import { generateBadgeUrl } from '../../lib/markdown';
 
 interface CanvasItemProps {
@@ -14,20 +13,24 @@ interface CanvasItemProps {
 }
 
 // Visual Renderer: Renders a "WYSIWYG-like" preview for the Builder Mode
-const ComponentRenderer: React.FC<{ component: ComponentInstance }> = ({ component }) => {
+// Visual Renderer: Renders a "WYSIWYG-like" preview for the Builder Mode
+// Wrapped in React.memo to prevent unnecessary re-renders during dragging
+const ComponentRenderer = React.memo(({ component }: { component: ComponentInstance }) => {
   const { type, props } = component;
   const globalUsername = useStore((state) => state.githubUsername);
 
   switch (type) {
-    case ComponentType.HEADER:
+    case ComponentType.HEADER: {
+      const alignClass = props.align === 'center' ? 'text-center' : 'text-left';
       return (
-        <div className={`text-${props.align} p-4`}>
+        <div className={`p-4 ${alignClass}`}>
           <h1 className="text-3xl font-bold text-foreground flex items-center gap-2 justify-center">
             {props.title} 
           </h1>
           <p className="text-muted mt-2 text-lg">{props.subtitle}</p>
         </div>
       );
+    }
     
     case ComponentType.TEXT:
       return (
@@ -61,7 +64,7 @@ const ComponentRenderer: React.FC<{ component: ComponentInstance }> = ({ compone
         return (
           <div className="p-4 flex justify-center">
             <div className="w-full max-w-md h-32 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted bg-surface/50">
-               <PhosphorIcons.UserCircle size={32} className="mb-2 opacity-50" />
+               <UserCircleIcon size={32} className="mb-2 opacity-50" />
                <span className="text-sm">Please enter a GitHub username</span>
             </div>
           </div>
@@ -132,9 +135,14 @@ const ComponentRenderer: React.FC<{ component: ComponentInstance }> = ({ compone
         </div>
       );
     
-    case ComponentType.IMAGE:
+    case ComponentType.IMAGE: {
+       const alignClass = props.align === 'center'
+         ? 'justify-center'
+         : props.align === 'right'
+           ? 'justify-end'
+           : 'justify-start';
        return (
-         <div className={`p-4 flex justify-${props.align === 'center' ? 'center' : 'start'}`}>
+         <div className={`p-4 flex ${alignClass}`}>
             <img 
               src={props.src} 
               alt={props.alt} 
@@ -143,6 +151,7 @@ const ComponentRenderer: React.FC<{ component: ComponentInstance }> = ({ compone
             />
          </div>
        );
+    }
 
     case ComponentType.MARKDOWN:
        return (
@@ -151,10 +160,31 @@ const ComponentRenderer: React.FC<{ component: ComponentInstance }> = ({ compone
          </div>
        );
 
+    case ComponentType.PROJECT_DEMO:
+      return (
+        <div className="p-4 flex flex-col items-center text-center gap-3">
+          <h3 className="text-lg font-semibold text-foreground">Project Demo</h3>
+          <div className="w-full flex justify-center">
+            {props.gifUrl ? (
+              <img 
+                src={props.gifUrl} 
+                alt="Project Demo" 
+                className="max-w-full rounded-md border border-border bg-background" 
+                style={{ maxHeight: '260px', objectFit: 'contain' }}
+              />
+            ) : (
+              <div className="w-full max-w-md h-40 border-2 border-dashed border-border rounded-lg flex items-center justify-center text-muted bg-surface/50 text-sm">
+                Paste a GIF URL to preview
+              </div>
+            )}
+          </div>
+        </div>
+      );
+
     default:
       return <div className="p-4 text-red-500">Unknown Component</div>;
   }
-}
+});
 
 export const CanvasItem: React.FC<CanvasItemProps> = ({ component, isSelected, onSelect, hasSeparator }) => {
   const {
@@ -167,10 +197,13 @@ export const CanvasItem: React.FC<CanvasItemProps> = ({ component, isSelected, o
   } = useSortable({ id: component.id });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
+    // Fixed: Use translate3d instead of CSS.Transform.toString to avoid "scale" distortion.
+    // This ensures components don't look squashed when swapping slots of different sizes.
+    transform: transform ? `translate3d(${Math.round(transform.x)}px, ${Math.round(transform.y)}px, 0)` : undefined,
+    transition: isDragging ? 'none' : transition,
     zIndex: isDragging ? 50 : 'auto',
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.9 : 1,
+    willChange: isDragging ? 'transform' : 'auto',
   };
 
   // Determine width
@@ -182,25 +215,19 @@ export const CanvasItem: React.FC<CanvasItemProps> = ({ component, isSelected, o
     <div
       ref={setNodeRef}
       style={style}
-      className={`group relative rounded-xl border-2 transition-all duration-200 bg-surface flex-shrink-0 flex flex-col
+      className={`group relative rounded-xl border-2 bg-surface flex-shrink-0 flex flex-col cursor-grab active:cursor-grabbing
         ${isSelected ? 'border-primary ring-1 ring-primary shadow-lg shadow-primary/10' : 'border-transparent hover:border-surface-hover'}
+        ${isDragging ? 'shadow-2xl ring-4 ring-primary/20 border-primary scale-[1.01]' : 'transition-shadow duration-200'}
         ${isHalf ? 'w-[calc(50%-0.5rem)]' : 'w-full'}
-        ${hasSeparator ? 'mb-4' : 'mb-4'}
+        mb-4
       `}
+      {...attributes}
+      {...listeners}
       onClick={(e) => {
         e.stopPropagation();
         onSelect(component.id);
       }}
     >
-      {/* Drag Handle - Only visible on hover or selected */}
-      <div 
-        className={`absolute left-1/2 -top-3 -translate-x-1/2 p-1.5 rounded-md bg-surface-hover text-muted cursor-grab active:cursor-grabbing hover:text-foreground shadow-sm border border-border transition-opacity z-10 ${isSelected || 'opacity-0 group-hover:opacity-100'}`}
-        {...attributes} 
-        {...listeners}
-      >
-        <PhosphorIcons.DotsSixVertical size={16} weight="bold" />
-      </div>
-
       {/* Content */}
       <div className="min-h-[60px]">
         <ComponentRenderer component={component} />
@@ -227,3 +254,4 @@ export const CanvasItem: React.FC<CanvasItemProps> = ({ component, isSelected, o
     </div>
   );
 };
+
