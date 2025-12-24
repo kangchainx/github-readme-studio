@@ -59,16 +59,18 @@ const Canvas = () => {
 
   return (
     <div 
-      className="flex-1 overflow-y-auto p-8 flex justify-center custom-scrollbar bg-background"
+      className={`flex-1 overflow-y-auto p-8 flex custom-scrollbar bg-background transition-all duration-300 ${components.length === 0 ? 'items-center justify-center' : 'justify-center'}`}
       onClick={() => selectComponent(null)}
       style={{ backgroundImage: canvasBackground, backgroundSize: '20px 20px' }}
     >
-      <div className="w-full max-w-3xl pb-20">
+      <div className={`w-full max-w-3xl ${components.length === 0 ? 'h-full flex items-center justify-center' : 'pb-20'}`}>
         {components.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-96 border-2 border-dashed border-border rounded-xl bg-surface/50 text-muted">
-            <GhostIcon size={48} className="mb-4 opacity-50" />
-            <p className="text-lg font-medium text-foreground">It's quiet in here...</p>
-            <p className="text-sm">Click a component on the left to get started.</p>
+          <div className="w-full max-w-md flex flex-col items-center justify-center aspect-[4/3] border-2 border-dashed border-border rounded-3xl bg-surface/30 text-muted animate-in fade-in zoom-in-95 duration-500">
+            <div className="bg-surface p-4 rounded-2xl shadow-xl mb-6 ring-1 ring-border">
+              <GhostIcon size={48} className="opacity-50" weight="duotone" />
+            </div>
+            <p className="text-xl font-semibold text-foreground mb-1">It's quiet in here...</p>
+            <p className="text-sm opacity-60">Click a component on the left to get started.</p>
           </div>
         ) : (
           <SortableContext 

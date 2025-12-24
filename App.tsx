@@ -15,7 +15,9 @@ import {
   MoonIcon, 
   CheckIcon, 
   CopyIcon, 
-  DownloadSimpleIcon 
+  DownloadSimpleIcon,
+  TrashIcon,
+  Columns as ColumnsIcon
 } from '@phosphor-icons/react';
 import { 
   DndContext, 
@@ -32,10 +34,35 @@ import {
 import { ComponentType } from './types';
 
 const App = () => {
-  const { editorMode, setEditorMode, components, githubUsername, themeMode, toggleTheme, showSeparators, reorderComponents, addComponent } = useStore();
+  const { editorMode, setEditorMode, components, githubUsername, themeMode, toggleTheme, showSeparators, reorderComponents, addComponent, removeComponent, selectComponent, selectedId, updateComponentProps } = useStore();
   const [copySuccess, setCopySuccess] = useState(false);
   const [isLeftOpen, setIsLeftOpen] = useState(true);
   const [isRightOpen, setIsRightOpen] = useState(true);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; componentId: string | null } | null>(null);
+
+  // Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if input/textarea is focused
+      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return;
+
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selectedId) {
+          removeComponent(selectedId);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedId, removeComponent]);
+
+  // Global click to close context menu
+  useEffect(() => {
+    const handleClick = () => setContextMenu(null);
+    window.addEventListener('click', handleClick);
+    return () => window.removeEventListener('click', handleClick);
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -192,7 +219,65 @@ const App = () => {
           </div>
 
           {/* Center - Canvas */}
-          <Canvas />
+          <div 
+            className="flex-1 overflow-hidden relative flex flex-col"
+            onContextMenu={(e) => {
+              // Always prevent default native menu
+              e.preventDefault();
+              
+              // Hit test to find the component under cursor
+              const target = e.target as HTMLElement;
+              const componentEl = target.closest('[data-component-id]');
+              
+              if (componentEl) {
+                const id = componentEl.getAttribute('data-component-id');
+                if (id) {
+                   // Always select the component when right-clicking it
+                   selectComponent(id);
+                   setContextMenu({ x: e.clientX, y: e.clientY, componentId: id });
+                }
+              } else {
+                // Clicked on empty canvas -> close menu
+                setContextMenu(null);
+              }
+            }}
+          >
+             <Canvas />
+             
+             {/* Context Menu */}
+             {contextMenu && (
+               <div 
+                 className="fixed z-[50] bg-surface border border-border rounded-lg shadow-xl w-48 animate-in fade-in zoom-in-95 duration-100 p-1"
+                 style={{ left: contextMenu.x, top: contextMenu.y }}
+               >
+                 <button 
+                onClick={() => {
+                  const comp = components.find(c => c.id === contextMenu.componentId);
+                  if (comp) {
+                    const newWidth = comp.props.width === 'half' ? 'full' : 'half';
+                    updateComponentProps(comp.id, { width: newWidth });
+                  }
+                  setContextMenu(null);
+                }}
+                className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-surface-hover flex items-center gap-2 transition-colors cursor-pointer"
+              >
+                <ColumnsIcon size={14} className="text-muted-foreground" />
+                Toggle Layout (Full/Half)
+              </button>
+              <div className="h-px bg-border my-1"></div>
+              <button 
+                onClick={() => {
+                  removeComponent(contextMenu.componentId!);
+                  setContextMenu(null);
+                }}
+                className="w-full text-left px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 flex items-center gap-2 transition-colors cursor-pointer"
+              >
+                <TrashIcon size={14} />
+                Delete Component
+              </button>
+            </div>
+          )}
+        </div>
 
           {/* Right Sidebar - Inspector (Only active in Builder Mode) */}
           {editorMode === 'builder' && (
