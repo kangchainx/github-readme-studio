@@ -3,12 +3,25 @@ export enum ComponentType {
   HEADER = 'header',
   TEXT = 'text',
   TEXT_WITH_IMAGE = 'text_with_image',
-  STATS = 'stats',
+  CORE_STATS = 'core_stats',
+  STREAK_STATS = 'streak_stats',
+  REPO_CARD = 'repo_card',
   TECH_STACK = 'tech_stack',
   SOCIALS = 'socials',
   IMAGE = 'image',
   MARKDOWN = 'markdown',
   PROJECT_DEMO = 'project_demo',
+  HEADING = 'heading',
+  LIST = 'list',
+  BREAKER = 'breaker',
+  BADGE = 'badge',
+  TABLE = 'table',
+  DETAILS = 'details',
+  CODE_BLOCK = 'code_block',
+  BLOCKQUOTE = 'blockquote',
+  SVG = 'svg',
+  LINK = 'link',
+  IMAGE_LINK = 'image_link',
 }
 
 // Global Editor Modes
@@ -49,7 +62,7 @@ export interface AppState {
   
   // Actions
   setGithubUsername: (username: string) => void;
-  addComponent: (type: ComponentType) => void;
+  addComponent: (type: ComponentType, initialProps?: ComponentProps) => void;
   removeComponent: (id: string) => void;
   updateComponentProps: (id: string, props: Partial<ComponentProps>) => void;
   reorderComponents: (oldIndex: number, newIndex: number) => void;

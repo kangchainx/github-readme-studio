@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { AppState, ComponentInstance, ComponentType, EditorMode } from './types';
+import { AppState, ComponentInstance, ComponentType, EditorMode, ComponentProps } from './types';
 import { COMPONENT_DEFINITIONS } from './constants';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -31,12 +31,17 @@ export const useStore = create<AppState>((set) => ({
 
   setGithubUsername: (username: string) => set({ githubUsername: username }),
 
-  addComponent: (type: ComponentType) => set((state) => {
+  addComponent: (type: ComponentType, initialProps?: ComponentProps) => set((state) => {
     const def = COMPONENT_DEFINITIONS.find((c) => c.type === type);
-    if (!def) return state;
+    if (!def && !initialProps) return state; // Allow adding even if not in defs if props provided, or rely on defs
 
     // Deep clone defaults
-    const newProps = JSON.parse(JSON.stringify(def.defaultProps));
+    let newProps = def ? JSON.parse(JSON.stringify(def.defaultProps)) : {};
+    
+    // Merge with initialProps if provided
+    if (initialProps) {
+      newProps = { ...newProps, ...initialProps };
+    }
     
     // Dynamic logic: Inject username into Header if available
     if (type === ComponentType.HEADER && state.githubUsername) {
