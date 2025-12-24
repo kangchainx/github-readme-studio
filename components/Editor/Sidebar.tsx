@@ -6,8 +6,8 @@ import {
   UserCircleIcon, 
   GearIcon, 
   SquaresFourIcon, 
-  WarningIcon, 
-  QuestionIcon 
+  QuestionIcon,
+  MagnifyingGlassIcon
 } from '@phosphor-icons/react';
 import { Input, Label, Switch } from '../ui/UIComponents';
 import { ComponentType } from '../../types';
@@ -56,6 +56,7 @@ const Sidebar = () => {
   const { addComponent, githubUsername, setGithubUsername, showSeparators, toggleSeparators } = useStore();
   const [activeTab, setActiveTab] = useState<'basic' | 'advanced'>('basic');
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     // Check if user has seen onboarding
@@ -73,8 +74,13 @@ const Sidebar = () => {
   };
 
   const filteredComponents = useMemo(() => {
-    return COMPONENT_DEFINITIONS.filter((def) => def.category === activeTab);
-  }, [activeTab]);
+    return COMPONENT_DEFINITIONS.filter((def) => {
+      const matchesTab = def.category === activeTab;
+      const matchesSearch = def.label.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            def.description.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesTab && matchesSearch;
+    });
+  }, [activeTab, searchQuery]);
 
   return (
     <aside className="w-72 border-r border-border bg-background flex flex-col h-full z-10">
@@ -125,14 +131,25 @@ const Sidebar = () => {
             onClick={() => setActiveTab('advanced')}
             className={`flex-1 text-xs py-1.5 rounded-sm transition-colors ${activeTab === 'advanced' ? 'bg-background text-foreground shadow-sm' : 'text-muted hover:text-foreground'}`}
           >
-            Advanced
+           Advanced
           </button>
+        </div>
+        
+        {/* Search Bar */}
+        <div className="mt-3 relative">
+          <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted" size={14} />
+          <Input 
+            placeholder="Search components..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-8 bg-surface/50 text-xs h-8"
+          />
         </div>
       </div>
       
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         <div className="grid grid-cols-1 gap-2">
-          {filteredComponents.map((def) => {
+          {filteredComponents.map((def, index) => {
              // Try searching for the icon with 'Icon' suffix first, then fallback to literal name or QuestionIcon
              const Icon = (Icons as any)[`${def.icon}Icon`] || (Icons as any)[def.icon] || QuestionIcon;
              const requiresUsername = def.type === ComponentType.STATS || def.type === ComponentType.HEADER;
@@ -140,8 +157,8 @@ const Sidebar = () => {
 
              return (
               <button
-                key={def.type}
-                onClick={() => !isDisabled && addComponent(def.type)}
+                key={`${def.type}-${index}`}
+                onClick={() => !isDisabled && addComponent(def.type, def.defaultProps)}
                 disabled={isDisabled}
                 className={`flex items-start gap-3 p-3 rounded-lg border border-border bg-surface transition-all text-left group relative w-full ${
                   isDisabled ? 'opacity-50 cursor-not-allowed grayscale' : 'hover:bg-surface-hover hover:border-zinc-500/30'
@@ -163,18 +180,7 @@ const Sidebar = () => {
         </div>
       </div>
 
-      {!githubUsername && (
-        <div className="p-4 border-t border-border bg-surface/20">
-          <div className="rounded-md bg-amber-900/10 border border-amber-500/20 p-3">
-            <div className="flex items-start gap-3">
-              <WarningIcon className="text-amber-500 shrink-0 mt-0.5" size={16} />
-              <p className="text-xs text-amber-500/80">
-                Set your username above to unlock Hero and Stats cards.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+
     </aside>
   );
 };
