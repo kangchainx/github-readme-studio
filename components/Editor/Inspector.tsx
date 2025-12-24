@@ -1,21 +1,22 @@
 import React, { useState } from 'react';
 import { useStore } from '../../store';
 import { ComponentType } from '../../types';
-import { Button, Input, Label, Textarea, Select } from '../ui/UIComponents';
+import { Button, Input, Label, Textarea, Select, Switch } from '../ui/UIComponents';
 import { 
   TrashIcon, 
   XIcon, 
   CursorClickIcon,
   MagnifyingGlassIcon,
   CheckIcon,
-  FadersIcon
+  FadersIcon,
+  PlusIcon
 } from '@phosphor-icons/react';
-import { BADGE_STYLES, GITHUB_THEMES } from '../../constants';
+import { BADGE_STYLES, GITHUB_THEMES, SOCIAL_PLATFORMS } from '../../constants';
 import { TECH_CATEGORIES, ALL_TECHS } from '../../data/techStack';
 import { generateBadgeUrl } from '../../lib/markdown';
 
 const Inspector = () => {
-  const { components, selectedId, updateComponentProps, removeComponent, githubUsername } = useStore();
+  const { components, selectedId, updateComponentProps, removeComponent } = useStore();
   const [techSearch, setTechSearch] = useState('');
   
   const selectedComponent = components.find(c => c.id === selectedId);
@@ -35,6 +36,10 @@ const Inspector = () => {
     updateComponentProps(selectedComponent.id, { [key]: value });
   };
 
+  const updateProps = (newProps: Record<string, any>) => {
+    updateComponentProps(selectedComponent.id, newProps);
+  };
+
   const toggleTech = (tech: string) => {
     const current = props.technologies || [];
     if (current.includes(tech)) {
@@ -44,14 +49,6 @@ const Inspector = () => {
     }
   };
 
-  const getStatsUrl = (variant: string, theme: string, user: string) => {
-     if (variant === 'streak') {
-       return `https://github-readme-streak-stats.herokuapp.com/?user=${user}&theme=${theme}&hide_border=true`;
-     } else if (variant === 'languages') {
-       return `https://github-readme-stats.vercel.app/api/top-langs/?username=${user}&theme=${theme}&hide_border=true&layout=compact`;
-     }
-     return `https://github-readme-stats.vercel.app/api?username=${user}&theme=${theme}&hide_border=true&hide_rank=true&hide_title=true`;
-  }
 
   // Common Width Selector
   const renderWidthSelector = (key = 'width') => (
@@ -101,13 +98,48 @@ const Inspector = () => {
           </>
         );
 
+      case ComponentType.HEADING:
+        return (
+          <>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Level</Label>
+                <div className="flex bg-surface rounded-md p-1 border border-border">
+                  {[1, 2, 3, 4, 5, 6].map((l) => (
+                    <button
+                      key={l}
+                      onClick={() => handleChange('level', l)}
+                      className={`flex-1 text-xs py-1.5 rounded-sm transition-colors ${props.level === l ? 'bg-background text-foreground shadow-sm' : 'text-muted hover:text-foreground'}`}
+                    >
+                      H{l}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Content</Label>
+                <Input value={props.content} onChange={(e) => handleChange('content', e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label>Align</Label>
+                <Select value={props.align} onChange={(e) => handleChange('align', e.target.value)}>
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                </Select>
+              </div>
+            </div>
+            {renderWidthSelector()}
+          </>
+        );
+
       case ComponentType.TEXT:
         return (
            <>
              <div className="space-y-2">
-                <Label>Content</Label>
+                <Label>Paragraph Content</Label>
                 <Textarea 
-                  className="min-h-[200px] font-mono" 
+                  className="min-h-[200px] font-mono leading-relaxed" 
                   value={props.content} 
                   onChange={(e) => handleChange('content', e.target.value)} 
                 />
@@ -115,6 +147,360 @@ const Inspector = () => {
              {renderWidthSelector()}
            </>
         );
+
+      case ComponentType.LIST:
+        return (
+          <>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>List Style</Label>
+                <Select value={props.type} onChange={(e) => handleChange('type', e.target.value)}>
+                  <option value="unordered">Unordered (Bullets)</option>
+                  <option value="ordered">Ordered (Numbers)</option>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>List Items</Label>
+                <div className="space-y-2">
+                   {(props.items || []).map((item: string, idx: number) => (
+                     <div key={idx} className="flex gap-2">
+                       <Input 
+                         value={item} 
+                         onChange={(e) => {
+                           const newItems = [...(props.items || [])];
+                           newItems[idx] = e.target.value;
+                           handleChange('items', newItems);
+                         }} 
+                       />
+                       <button 
+                         onClick={() => {
+                           const newItems = [...(props.items || [])];
+                           newItems.splice(idx, 1);
+                           handleChange('items', newItems);
+                         }}
+                         className="p-2 text-muted hover:text-red-500 transition-colors"
+                       >
+                         <TrashIcon size={16} />
+                       </button>
+                     </div>
+                   ))}
+                   <Button 
+                     variant="secondary" 
+                     size="sm" 
+                     className="w-full gap-2"
+                     onClick={() => handleChange('items', [...(props.items || []), 'New Item'])}
+                   >
+                     <PlusIcon size={14} /> Add Item
+                   </Button>
+                </div>
+              </div>
+            </div>
+            {renderWidthSelector()}
+          </>
+        );
+      
+      case ComponentType.BLOCKQUOTE:
+        return (
+           <>
+             <div className="space-y-2">
+                <Label>Quote Content</Label>
+                <Textarea 
+                  className="min-h-[100px]" 
+                  value={props.content} 
+                  onChange={(e) => handleChange('content', e.target.value)} 
+                />
+             </div>
+             {renderWidthSelector()}
+           </>
+        );
+
+      case ComponentType.CODE_BLOCK:
+        return (
+           <>
+             <div className="space-y-2">
+                <Label>Language</Label>
+                <Select value={props.language} onChange={(e) => handleChange('language', e.target.value)}>
+                  <option value="javascript">JavaScript</option>
+                  <option value="typescript">TypeScript</option>
+                  <option value="python">Python</option>
+                  <option value="html">HTML</option>
+                  <option value="css">CSS</option>
+                  <option value="json">JSON</option>
+                  <option value="bash">Bash</option>
+                  <option value="markdown">Markdown</option>
+                  <option value="yaml">YAML</option>
+                  <option value="go">Go</option>
+                  <option value="rust">Rust</option>
+                </Select>
+             </div>
+             <div className="space-y-2">
+                <Label>Code</Label>
+                <Textarea 
+                  className="min-h-[200px] font-mono text-xs" 
+                  value={props.code} 
+                  onChange={(e) => handleChange('code', e.target.value)} 
+                />
+             </div>
+             {renderWidthSelector()}
+           </>
+        );
+
+      case ComponentType.LINK:
+        return (
+           <>
+             <div className="space-y-2">
+                <Label>Label</Label>
+                <Input value={props.label} onChange={(e) => handleChange('label', e.target.value)} />
+             </div>
+             <div className="space-y-2">
+                <Label>URL</Label>
+                <Input value={props.url} onChange={(e) => handleChange('url', e.target.value)} />
+             </div>
+             {renderWidthSelector()}
+           </>
+        );
+
+      case ComponentType.IMAGE_LINK:
+        return (
+           <>
+             <div className="space-y-2">
+                <Label>Image URL</Label>
+                <Input value={props.src} onChange={(e) => handleChange('src', e.target.value)} />
+             </div>
+             <div className="space-y-2">
+                <Label>Target URL</Label>
+                <Input value={props.url} onChange={(e) => handleChange('url', e.target.value)} />
+             </div>
+             <div className="space-y-2">
+                <Label>Alt Text</Label>
+                <Input value={props.alt} onChange={(e) => handleChange('alt', e.target.value)} />
+             </div>
+             <div className="space-y-2">
+               <Label>Alignment</Label>
+               <Select value={props.align} onChange={(e) => handleChange('align', e.target.value)}>
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+               </Select>
+             </div>
+             {renderWidthSelector()}
+           </>
+        );
+
+      case ComponentType.DETAILS:
+        return (
+           <>
+             <div className="space-y-2">
+                <Label>Summary (Clickable Text)</Label>
+                <Input value={props.summary} onChange={(e) => handleChange('summary', e.target.value)} />
+             </div>
+             <div className="space-y-2">
+                <Label>Hidden Content</Label>
+                <Textarea 
+                  className="min-h-[150px]" 
+                  value={props.content} 
+                  onChange={(e) => handleChange('content', e.target.value)} 
+                />
+             </div>
+             {renderWidthSelector()}
+           </>
+        );
+
+      case ComponentType.TABLE: {
+        // Helper to ensure rows have correct column count
+        const headers = props.headers || [];
+        const rows = props.rows || [];
+        
+        const updateRowCell = (rowIndex: number, colIndex: number, value: string) => {
+           const newRows = [...rows];
+           const newRow = [...(newRows[rowIndex] || [])];
+           newRow[colIndex] = value;
+           newRows[rowIndex] = newRow;
+           handleChange('rows', newRows);
+        };
+
+        const addRow = () => {
+           const newRow = new Array(headers.length).fill('');
+           handleChange('rows', [...rows, newRow]);
+        };
+        
+        const removeRow = (index: number) => {
+           const newRows = [...rows];
+           newRows.splice(index, 1);
+           handleChange('rows', newRows);
+        };
+
+        const updateHeader = (index: number, value: string) => {
+           const newHeaders = [...headers];
+           newHeaders[index] = value;
+           handleChange('headers', newHeaders);
+        };
+
+        const addColumn = () => {
+            handleChange('headers', [...headers, 'New Col']);
+            const newRows = rows.map((r: string[]) => [...r, '']);
+            handleChange('rows', newRows);
+        };
+
+        const removeColumn = (index: number) => {
+            const newHeaders = [...headers];
+            newHeaders.splice(index, 1);
+            handleChange('headers', newHeaders);
+            
+            const newRows = rows.map((r: string[]) => {
+               const newRow = [...r];
+               newRow.splice(index, 1);
+               return newRow;
+            });
+            handleChange('rows', newRows);
+        };
+
+        return (
+          <>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                 <div className="flex items-center justify-between">
+                   <Label>Columns (Headers)</Label>
+                   <Button variant="secondary" size="sm" onClick={addColumn} className="h-6 text-[10px] px-2">
+                     + Add Col
+                   </Button>
+                 </div>
+                 <div className="space-y-2">
+                    {headers.map((h: string, i: number) => (
+                      <div key={i} className="flex gap-1">
+                        <Input 
+                          value={h} 
+                          onChange={(e) => updateHeader(i, e.target.value)}
+                          className="text-xs h-7 font-bold"
+                          placeholder={`Header ${i+1}`}
+                        />
+                        <button onClick={() => removeColumn(i)} className="p-1 text-muted hover:text-red-500">
+                          <TrashIcon size={14} />
+                        </button>
+                      </div>
+                    ))}
+                 </div>
+              </div>
+
+              <div className="space-y-2">
+                 <div className="flex items-center justify-between">
+                   <Label>Rows Data</Label>
+                   <Button variant="secondary" size="sm" onClick={addRow} className="h-6 text-[10px] px-2">
+                     + Add Row
+                   </Button>
+                 </div>
+                 <div className="space-y-3">
+                   {rows.map((row: string[], rowIndex: number) => (
+                     <div key={rowIndex} className="p-2 bg-surface rounded border border-border relative group">
+                        <button 
+                          onClick={() => removeRow(rowIndex)}
+                          className="absolute -right-2 -top-2 bg-background border border-border rounded-full p-1 text-muted hover:text-red-500 hover:border-red-500 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                        >
+                          <TrashIcon size={12} weight="bold" />
+                        </button>
+                        <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${headers.length}, minmax(0, 1fr))` }}>
+                           {headers.map((_: any, colIndex: number) => (
+                             <div key={colIndex}> 
+                               <Input 
+                                 value={row[colIndex] || ''}
+                                 onChange={(e) => updateRowCell(rowIndex, colIndex, e.target.value)}
+                                 className="text-xs h-7 px-1.5"
+                                 placeholder="..."
+                               />
+                             </div>
+                           ))}
+                        </div>
+                     </div>
+                   ))}
+                 </div>
+                 {rows.length === 0 && (
+                   <div className="text-center p-4 border border-dashed border-border rounded-lg text-muted text-xs">
+                     No rows. Click "Add Row" to start.
+                   </div>
+                 )}
+              </div>
+
+               <div className="space-y-2">
+               <Label>Alignment</Label>
+               <Select value={props.align} onChange={(e) => handleChange('align', e.target.value)}>
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+               </Select>
+             </div>
+            </div>
+            {renderWidthSelector()}
+          </>
+        );
+      }
+
+      case ComponentType.BADGE:
+        return (
+          <>
+            <div className="space-y-2">
+               <Label>Label</Label>
+               <Input value={props.label} onChange={(e) => handleChange('label', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+               <Label>Message</Label>
+               <Input value={props.message} onChange={(e) => handleChange('message', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+               <Label>Color</Label>
+               <Input value={props.color} onChange={(e) => handleChange('color', e.target.value)} />
+            </div>
+            <div className="space-y-2">
+               <Label>Logo (Optional)</Label>
+               <Input value={props.logo} onChange={(e) => handleChange('logo', e.target.value)} placeholder="github, twitter..." />
+            </div>
+            <div className="space-y-2">
+               <Label>Logo Color</Label>
+               <Input value={props.logoColor} onChange={(e) => handleChange('logoColor', e.target.value)} placeholder="white" />
+            </div>
+            <div className="space-y-2">
+               <Label>Style</Label>
+               <Select value={props.style} onChange={(e) => handleChange('style', e.target.value)}>
+                 {BADGE_STYLES.map(s => <option key={s} value={s}>{s}</option>)}
+               </Select>
+            </div>
+            {renderWidthSelector()}
+          </>
+        );
+
+      case ComponentType.SVG:
+        return (
+          <>
+             <div className="space-y-2">
+               <Label>SVG/GIF URL</Label>
+               <Input value={props.src} onChange={(e) => handleChange('src', e.target.value)} />
+             </div>
+             <div className="space-y-2">
+               <Label>Alt Text</Label>
+               <Input value={props.alt} onChange={(e) => handleChange('alt', e.target.value)} />
+             </div>
+             <div className="space-y-2">
+               <Label>Max Height</Label>
+               <Input value={props.maxHeight} onChange={(e) => handleChange('maxHeight', e.target.value)} placeholder="300px" />
+             </div>
+             {renderWidthSelector()}
+          </>
+        );
+
+      case ComponentType.BREAKER:
+        return (
+          <>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Separator Variant</Label>
+                <Select value={props.variant} onChange={(e) => handleChange('variant', e.target.value)}>
+                  <option value="line">Horizontal Line (hr)</option>
+                  <option value="spacer">Empty Space (Gap)</option>
+                </Select>
+              </div>
+            </div>
+            {renderWidthSelector()}
+          </>
+        );
+
 
       case ComponentType.TEXT_WITH_IMAGE:
         return (
@@ -152,84 +538,108 @@ const Inspector = () => {
            </>
         );
 
-      case ComponentType.STATS: {
-        const demoUser = githubUsername || 'github';
-        const currentVariant = props.variant || 'stats';
-
-        return (
-          <>
-            <div className="space-y-2 mb-4 p-3 bg-surface rounded border border-border">
-              <div className="flex items-center gap-2 mb-2">
-                <input 
-                  type="checkbox" 
-                  checked={props.useGlobalUsername !== false} 
-                  onChange={(e) => handleChange('useGlobalUsername', e.target.checked)} 
-                />
-                <Label className="mb-0">Use Global Username</Label>
-              </div>
-              
-              {props.useGlobalUsername === false && (
-                <div className="space-y-1">
-                   <Label>Override Username</Label>
-                   <Input value={props.username} onChange={(e) => handleChange('username', e.target.value)} placeholder="github" />
-                </div>
-              )}
+      case ComponentType.CORE_STATS:
+      return (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Theme</Label>
+            <div className="flex bg-surface rounded-md p-1 border border-border flex-wrap gap-1">
+              {GITHUB_THEMES.map(theme => (
+                <button
+                  key={theme}
+                  onClick={() => updateProps({ theme })}
+                  className={`text-[10px] px-2 py-1 rounded transition-colors ${props.theme === theme ? 'bg-primary text-primary-foreground' : 'hover:bg-surface-hover text-muted'}`}
+                >
+                  {theme}
+                </button>
+              ))}
             </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <Label>Show Icons</Label>
+            <Switch 
+              checked={props.showIcons} 
+              onCheckedChange={(showIcons) => updateProps({ showIcons })}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label>Show Rank</Label>
+            <Switch 
+              checked={props.showRank} 
+              onCheckedChange={(showRank) => updateProps({ showRank })}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label>Hide Border</Label>
+            <Switch 
+              checked={props.hideBorder} 
+              onCheckedChange={(hideBorder) => updateProps({ hideBorder })}
+            />
+          </div>
+        </div>
+      );
 
-            <div className="space-y-2 mb-4">
-               <Label>Card Type</Label>
-               <Select value={currentVariant} onChange={(e) => handleChange('variant', e.target.value)}>
-                  <option value="stats">General Stats</option>
-                  <option value="streak">Streak Stats</option>
-                  <option value="languages">Top Languages</option>
-               </Select>
+    case ComponentType.STREAK_STATS:
+      return (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Theme</Label>
+            <div className="flex bg-surface rounded-md p-1 border border-border flex-wrap gap-1">
+              {GITHUB_THEMES.map(theme => (
+                <button
+                  key={theme}
+                  onClick={() => updateProps({ theme })}
+                  className={`text-[10px] px-2 py-1 rounded transition-colors ${props.theme === theme ? 'bg-primary text-primary-foreground' : 'hover:bg-surface-hover text-muted'}`}
+                >
+                  {theme}
+                </button>
+              ))}
             </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <Label>Hide Border</Label>
+            <Switch 
+              checked={props.hideBorder} 
+              onCheckedChange={(hideBorder) => updateProps({ hideBorder })}
+            />
+          </div>
+        </div>
+      );
 
-            <div className="space-y-2">
-               <Label>Theme Selector</Label>
-               <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto p-1 custom-scrollbar bg-surface rounded-lg border border-border">
-                 {GITHUB_THEMES.map(t => (
-                   <button 
-                     key={t}
-                     onClick={() => handleChange('theme', t)}
-                     className={`relative rounded overflow-hidden border transition-all ${props.theme === t ? 'border-primary ring-1 ring-primary' : 'border-border hover:border-muted'}`}
-                   >
-                     <img 
-                       src={getStatsUrl(currentVariant, t, demoUser)}
-                       alt={t}
-                       className="w-full h-auto object-cover opacity-90 hover:opacity-100"
-                       loading="lazy"
-                     />
-                     <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-[10px] text-center py-1 truncate px-1 text-white">
-                       {t}
-                     </div>
-                   </button>
-                 ))}
-               </div>
+    case ComponentType.REPO_CARD:
+      return (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Repo Name</Label>
+            <Input 
+              value={props.repo || ''} 
+              onChange={(e) => updateProps({ repo: e.target.value })}
+              placeholder="e.g. github-readme-studio"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Theme</Label>
+            <div className="flex bg-surface rounded-md p-1 border border-border flex-wrap gap-1">
+              {GITHUB_THEMES.map(theme => (
+                <button
+                  key={theme}
+                  onClick={() => updateProps({ theme })}
+                  className={`text-[10px] px-2 py-1 rounded transition-colors ${props.theme === theme ? 'bg-primary text-primary-foreground' : 'hover:bg-surface-hover text-muted'}`}
+                >
+                  {theme}
+                </button>
+              ))}
             </div>
-
-            <div className="space-y-2 border-t border-border pt-4 mt-4">
-               {currentVariant !== 'streak' && currentVariant !== 'languages' && (
-                 <>
-                   <div className="flex items-center gap-2">
-                      <input type="checkbox" checked={props.showIcons} onChange={(e) => handleChange('showIcons', e.target.checked)} />
-                      <Label>Show Icons</Label>
-                   </div>
-                   <div className="flex items-center gap-2">
-                      <input type="checkbox" checked={props.showRank} onChange={(e) => handleChange('showRank', e.target.checked)} />
-                      <Label>Show Rank</Label>
-                   </div>
-                 </>
-               )}
-               <div className="flex items-center gap-2">
-                  <input type="checkbox" checked={props.hideBorder} onChange={(e) => handleChange('hideBorder', e.target.checked)} />
-                  <Label>Hide Border</Label>
-               </div>
-            </div>
-            {renderWidthSelector()}
-          </>
-        );
-      }
+          </div>
+          <div className="flex items-center justify-between">
+            <Label>Hide Border</Label>
+            <Switch 
+              checked={props.hideBorder} 
+              onCheckedChange={(hideBorder) => updateProps({ hideBorder })}
+            />
+          </div>
+        </div>
+      );
 
       case ComponentType.TECH_STACK:
       {
@@ -353,77 +763,99 @@ const Inspector = () => {
         );
 
       case ComponentType.PROJECT_DEMO:
-        return (
-          <>
-            <div className="space-y-2">
-              <Label>GIF URL</Label>
-              <Input
-                value={props.gifUrl}
-                onChange={(e) => handleChange('gifUrl', e.target.value)}
-                placeholder="https://media.giphy.com/media/..."
-              />
-            </div>
-            {renderWidthSelector()}
-          </>
-        );
+      return (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Section Title</Label>
+            <Input 
+              value={props.title || ''} 
+              onChange={(e) => updateProps({ title: e.target.value })}
+              placeholder="e.g. Project Demo"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>GIF / Image URL</Label>
+            <Input 
+              value={props.gifUrl || ''} 
+              onChange={(e) => updateProps({ gifUrl: e.target.value })}
+              placeholder="https://..."
+            />
+          </div>
+          {renderWidthSelector()}
+        </div>
+      );
 
-      case ComponentType.SOCIALS:
-        return (
-           <div className="space-y-4">
-              <Label>Social Links</Label>
-              {(props.items || []).map((item: any, idx: number) => (
-                <div key={idx} className="flex gap-2 items-center p-2 bg-surface rounded border border-border">
-                   <div className="flex-1 space-y-1">
-                      <Input 
-                        placeholder="Platform" 
-                        value={item.platform} 
-                        onChange={(e) => {
-                          const newItems = [...props.items];
-                          newItems[idx].platform = e.target.value;
-                          handleChange('items', newItems);
-                        }}
-                        className="h-7 text-xs"
-                      />
-                      <Input 
-                        placeholder="Username" 
-                        value={item.username} 
-                        onChange={(e) => {
-                           const newItems = [...props.items];
-                           newItems[idx].username = e.target.value;
-                           handleChange('items', newItems);
-                        }}
-                        className="h-7 text-xs"
-                      />
-                   </div>
-                   <button 
-                     onClick={() => {
-                        const newItems = [...props.items];
-                        newItems.splice(idx, 1);
-                        handleChange('items', newItems);
-                     }}
-                     className="text-muted hover:text-red-400 p-1"
-                   >
-                     <TrashIcon size={14} />
-                   </button>
-                </div>
-              ))}
+    case ComponentType.SOCIALS:
+      return (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Style</Label>
+            <Select value={props.style} onChange={(e) => handleChange('style', e.target.value)}>
+              {BADGE_STYLES.map(s => <option key={s} value={s}>{s}</option>)}
+            </Select>
+          </div>
+          
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Platforms</Label>
               <Button 
                 variant="secondary" 
                 size="sm" 
-                className="w-full"
-                onClick={() => handleChange('items', [...(props.items || []), { platform: 'twitter', username: '' }])}
+                className="h-7 text-[10px] px-2"
+                onClick={() => updateProps({ items: [...(props.items || []), { platform: 'github', username: '' }] })}
               >
                 + Add Link
               </Button>
-              {renderWidthSelector()}
-           </div>
-        );
+            </div>
+            {(props.items || []).map((item: any, idx: number) => (
+              <div key={idx} className="space-y-2 p-3 border border-border rounded-lg bg-surface/50">
+                <div className="flex items-center justify-between gap-2">
+                  <Select 
+                    value={item.platform} 
+                    onChange={(e) => {
+                      const newItems = [...props.items];
+                      newItems[idx] = { ...newItems[idx], platform: e.target.value };
+                      updateProps({ items: newItems });
+                    }}
+                    className="flex-1"
+                  >
+                    {SOCIAL_PLATFORMS.map(p => (
+                      <option key={p.id} value={p.id}>{p.label}</option>
+                    ))}
+                  </Select>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="shrink-0 text-red-500 hover:text-red-400 h-8 w-8"
+                    onClick={() => {
+                      const newItems = props.items.filter((_: any, i: number) => i !== idx);
+                      updateProps({ items: newItems });
+                    }}
+                  >
+                    <TrashIcon size={14} />
+                  </Button>
+                </div>
+                <Input 
+                  value={item.username || ''} 
+                  onChange={(e) => {
+                    const newItems = [...props.items];
+                    newItems[idx] = { ...newItems[idx], username: e.target.value };
+                    updateProps({ items: newItems });
+                  }}
+                  placeholder="Username / Profile ID"
+                  className="h-8 text-xs"
+                />
+              </div>
+            ))}
+          </div>
+          {renderWidthSelector()}
+        </div>
+      );
 
       case ComponentType.MARKDOWN:
         return (
           <>
             <div className="space-y-2">
-              <Label>Raw Markdown</Label>
               <Textarea 
                 className="min-h-[300px] font-mono text-xs" 
                 value={props.markdown} 
