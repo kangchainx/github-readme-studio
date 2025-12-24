@@ -2,74 +2,21 @@ import { ComponentDefinition, ComponentType } from './types';
 
 export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
   {
-    type: ComponentType.HEADER,
-    label: 'Header / Hero',
+    type: ComponentType.HEADING,
+    category: 'basic',
+    label: 'Heading',
     icon: 'TextH',
-    description: 'Main title and introduction with a wave animation.',
+    description: 'Markdown heading (H1 - H6).',
     defaultProps: {
-      title: "Hi there, I'm John Doe 👋",
-      subtitle: "A passionate frontend engineer from New York.",
+      content: 'Heading Text',
+      level: 1,
       align: 'left',
-      width: 'full', // 'full' or 'half'
-    }
-  },
-  {
-    type: ComponentType.TEXT_WITH_IMAGE,
-    label: 'Text w/ Image',
-    icon: 'Article',
-    description: 'Text block side-by-side with an image or GIF.',
-    defaultProps: {
-      heading: 'About Me',
-      content: 'Write something about yourself here. This layout is great for introducing yourself alongside a profile picture or a funny GIF.',
-      imageSrc: 'https://media.giphy.com/media/cfuL5gqFDreXxkWQ4o/giphy.gif',
-      imageAlign: 'right',
-      imageWidth: '200',
-      width: 'full',
-    }
-  },
-  {
-    type: ComponentType.STATS,
-    label: 'GitHub Stats',
-    icon: 'ChartBar',
-    description: 'Display dynamic GitHub statistics, streaks, and languages.',
-    defaultProps: {
-      variant: 'stats', // 'stats', 'streak', 'languages'
-      useGlobalUsername: true,
-      username: '', // Local override
-      showIcons: true,
-      theme: 'radical',
-      hideBorder: true,
-      showRank: true,
-      width: 'full',
-    }
-  },
-  {
-    type: ComponentType.TECH_STACK,
-    label: 'Tech Stack',
-    icon: 'Stack',
-    description: 'Showcase your skills with badges.',
-    defaultProps: {
-      style: 'for-the-badge', // flat, flat-square, for-the-badge, plastic, social
-      technologies: ['TypeScript'], // Default to only TypeScript
-      width: 'full',
-    }
-  },
-  {
-    type: ComponentType.SOCIALS,
-    label: 'Social Links',
-    icon: 'ShareNetwork',
-    description: 'Link to your other profiles.',
-    defaultProps: {
-      style: 'flat-square',
-      items: [
-        { platform: 'twitter', username: 'twitter' },
-        { platform: 'linkedin', username: 'linkedin' }
-      ],
       width: 'full',
     }
   },
   {
     type: ComponentType.TEXT,
+    category: 'basic',
     label: 'Text Block',
     icon: 'TextT',
     description: 'A simple paragraph of text.',
@@ -79,7 +26,110 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
     }
   },
   {
+    type: ComponentType.LIST,
+    category: 'basic',
+    label: 'Bullet List',
+    icon: 'ListBullets',
+    description: 'Markdown bullet points.',
+    defaultProps: {
+      items: ['Item 1', 'Item 2', 'Item 3'],
+      type: 'unordered',
+      width: 'full',
+    }
+  },
+  {
+    type: ComponentType.LIST,
+    category: 'basic',
+    label: 'Ordered List',
+    icon: 'ListNumbers',
+    description: 'Numbered list.',
+    defaultProps: {
+      items: ['First step', 'Second step', 'Third step'],
+      type: 'ordered',
+      width: 'full',
+    }
+  },
+  {
+    type: ComponentType.BLOCKQUOTE,
+    category: 'basic',
+    label: 'Blockquote',
+    icon: 'Quotes',
+    description: 'Highlighted quote text.',
+    defaultProps: {
+      content: 'Knowledge is power.',
+      width: 'full',
+    }
+  },
+  {
+    type: ComponentType.CODE_BLOCK,
+    category: 'basic',
+    label: 'Code Block',
+    icon: 'CodeBlock',
+    description: 'Syntax highlighted code.',
+    defaultProps: {
+      code: 'console.log("Hello World");',
+      language: 'javascript',
+      showLineNumbers: true,
+      width: 'full',
+    }
+  },
+  {
+    type: ComponentType.LINK,
+    category: 'basic',
+    label: 'Link',
+    icon: 'Link',
+    description: 'Simple text link.',
+    defaultProps: {
+      label: 'My Website',
+      url: 'https://example.com',
+      width: 'full',
+    }
+  },
+  {
+    type: ComponentType.IMAGE_LINK,
+    category: 'basic',
+    label: 'Image Link',
+    icon: 'LinkBreak', // Or another suitable icon
+    description: 'Image that links to a URL.',
+    defaultProps: {
+      src: 'https://picsum.photos/200/50',
+      url: 'https://example.com',
+      alt: 'Clickable Image',
+      align: 'center',
+      width: 'full',
+    }
+  },
+  {
+    type: ComponentType.TABLE,
+    category: 'basic',
+    label: 'Table',
+    icon: 'Table',
+    description: 'Data grid.',
+    defaultProps: {
+      headers: ['Feature', 'Status', 'Notes'],
+      rows: [
+        ['Dark Mode', '✅', 'Fully supported'],
+        ['API', '🚧', 'In progress'],
+      ],
+      align: 'center',
+      width: 'full',
+    }
+  },
+  {
+    type: ComponentType.DETAILS,
+    category: 'basic',
+    label: 'Collapsible',
+    icon: 'CaretDown',
+    description: 'Foldable details section.',
+    defaultProps: {
+      summary: 'Click to reveal more',
+      content: 'Hidden content goes here.',
+      width: 'full',
+    }
+  },
+  {
     type: ComponentType.IMAGE,
+    category: 'basic',
     label: 'Image',
     icon: 'Image',
     description: 'Embed an image or GIF.',
@@ -88,16 +138,95 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
       alt: 'Banner',
       align: 'center',
       width: '100%',
-      widthMode: 'full', // renamed prop to avoid conflict with image width attribute
+      widthMode: 'full',
     }
   },
   {
-    type: ComponentType.MARKDOWN,
-    label: 'Raw Markdown',
-    icon: 'Code',
-    description: 'Write custom markdown directly.',
+    type: ComponentType.BREAKER,
+    category: 'basic',
+    label: 'Separator',
+    icon: 'Minus',
+    description: 'Horizontal line or spacing.',
     defaultProps: {
-      markdown: '### Custom Section\n\n- Item 1\n- Item 2',
+      variant: 'line',
+      width: 'full',
+    }
+  },
+  {
+    type: ComponentType.CORE_STATS,
+    category: 'advanced',
+    label: 'Core Stats',
+    icon: 'ChartBar',
+    description: 'General GitHub statistics (stars, commits, etc).',
+    defaultProps: {
+      theme: 'radical',
+      hideBorder: true,
+      showIcons: true,
+      showRank: true,
+      width: 'full',
+    }
+  },
+  {
+    type: ComponentType.STREAK_STATS,
+    category: 'advanced',
+    label: 'Streak Stats',
+    icon: 'Fire',
+    description: 'Display your GitHub contribution streak.',
+    defaultProps: {
+      theme: 'radical',
+      hideBorder: true,
+      width: 'full',
+    }
+  },
+  {
+    type: ComponentType.REPO_CARD,
+    category: 'advanced',
+    label: 'Repo Card',
+    icon: 'GitFork',
+    description: 'Showcase a specific repository.',
+    defaultProps: {
+      repo: '',
+      theme: 'radical',
+      hideBorder: true,
+      width: 'full',
+    }
+  },
+  {
+    type: ComponentType.TECH_STACK,
+    category: 'advanced',
+    label: 'Tech Stack',
+    icon: 'Stack',
+    description: 'Showcase your skills with badges.',
+    defaultProps: {
+      style: 'for-the-badge',
+      technologies: ['TypeScript'],
+      width: 'full',
+    }
+  },
+  {
+    type: ComponentType.SOCIALS,
+    category: 'advanced',
+    label: 'Social Links',
+    icon: 'ShareNetwork',
+    description: 'Link to your other profiles.',
+    defaultProps: {
+      style: 'flat-square',
+      items: [
+        { platform: 'github', username: '' },
+        { platform: 'twitter', username: '' }
+      ],
+      width: 'full',
+    }
+  },
+  {
+    type: ComponentType.PROJECT_DEMO,
+    category: 'advanced',
+    label: 'Project Showcase',
+    icon: 'PlayCircle',
+    description: 'Centered GIF showcase with a custom title.',
+    defaultProps: {
+      title: 'Project Demo',
+      gifUrl: 'https://media.giphy.com/media/cfuL5gqFDreXxkWQ4o/giphy.gif',
       width: 'full',
     }
   }
@@ -109,4 +238,19 @@ export const GITHUB_THEMES = [
 
 export const BADGE_STYLES = [
   'flat', 'flat-square', 'for-the-badge', 'plastic', 'social'
+];
+
+export const SOCIAL_PLATFORMS = [
+  { id: 'github', label: 'GitHub', color: '181717', logo: 'github' },
+  { id: 'twitter', label: 'X', color: '000000', logo: 'x' },
+  { id: 'linkedin', label: 'LinkedIn', color: '0A66C2', logo: 'linkedin' },
+  { id: 'instagram', label: 'Instagram', color: 'E4405F', logo: 'instagram' },
+  { id: 'facebook', label: 'Facebook', color: '1877F2', logo: 'facebook' },
+  { id: 'youtube', label: 'YouTube', color: 'FF0000', logo: 'youtube' },
+  { id: 'discord', label: 'Discord', color: '5865F2', logo: 'discord' },
+  { id: 'twitch', label: 'Twitch', color: '9146FF', logo: 'twitch' },
+  { id: 'medium', label: 'Medium', color: '12100E', logo: 'medium' },
+  { id: 'devto', label: 'Dev.to', color: '0A0A0A', logo: 'devdotto' },
+  { id: 'slack', label: 'Slack', color: '4A154B', logo: 'slack' },
+  { id: 'stack-overflow', label: 'Stack Overflow', color: 'FE7A15', logo: 'stackoverflow' },
 ];
