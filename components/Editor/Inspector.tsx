@@ -14,6 +14,7 @@ import {
 import { BADGE_STYLES, GITHUB_THEMES, SOCIAL_PLATFORMS } from '../../constants';
 import { TECH_CATEGORIES, ALL_TECHS } from '../../data/techStack';
 import { generateBadgeUrl } from '../../lib/markdown';
+import { MarkdownEditor } from './MarkdownEditor';
 
 const Inspector = () => {
   const { components, selectedId, updateComponentProps, removeComponent } = useStore();
@@ -81,11 +82,11 @@ const Inspector = () => {
           <>
             <div className="space-y-2">
               <Label>Title</Label>
-              <Input value={props.title} onChange={(e) => handleChange('title', e.target.value)} />
+              <MarkdownEditor value={props.title} onChange={(val) => handleChange('title', val)} rows={2} />
             </div>
             <div className="space-y-2">
               <Label>Subtitle</Label>
-              <Textarea value={props.subtitle} onChange={(e) => handleChange('subtitle', e.target.value)} />
+              <MarkdownEditor value={props.subtitle} onChange={(val) => handleChange('subtitle', val)} rows={3} />
             </div>
             <div className="space-y-2">
               <Label>Align</Label>
@@ -118,7 +119,7 @@ const Inspector = () => {
               </div>
               <div className="space-y-2">
                 <Label>Content</Label>
-                <Input value={props.content} onChange={(e) => handleChange('content', e.target.value)} />
+                <MarkdownEditor value={props.content} onChange={(val) => handleChange('content', val)} rows={2} />
               </div>
               <div className="space-y-2">
                 <Label>Align</Label>
@@ -138,10 +139,10 @@ const Inspector = () => {
            <>
              <div className="space-y-2">
                 <Label>Paragraph Content</Label>
-                <Textarea 
-                  className="min-h-[200px] font-mono leading-relaxed" 
+                <MarkdownEditor 
                   value={props.content} 
-                  onChange={(e) => handleChange('content', e.target.value)} 
+                  onChange={(val) => handleChange('content', val)} 
+                  rows={8}
                 />
              </div>
              {renderWidthSelector()}
@@ -204,10 +205,10 @@ const Inspector = () => {
            <>
              <div className="space-y-2">
                 <Label>Quote Content</Label>
-                <Textarea 
-                  className="min-h-[100px]" 
+                <MarkdownEditor 
                   value={props.content} 
-                  onChange={(e) => handleChange('content', e.target.value)} 
+                  onChange={(val) => handleChange('content', val)} 
+                  rows={3}
                 />
              </div>
              {renderWidthSelector()}
@@ -292,14 +293,14 @@ const Inspector = () => {
            <>
              <div className="space-y-2">
                 <Label>Summary (Clickable Text)</Label>
-                <Input value={props.summary} onChange={(e) => handleChange('summary', e.target.value)} />
+                <MarkdownEditor value={props.summary} onChange={(val) => handleChange('summary', val)} rows={2} />
              </div>
              <div className="space-y-2">
                 <Label>Hidden Content</Label>
-                <Textarea 
-                  className="min-h-[150px]" 
+                <MarkdownEditor 
                   value={props.content} 
-                  onChange={(e) => handleChange('content', e.target.value)} 
+                  onChange={(val) => handleChange('content', val)} 
+                  rows={5}
                 />
              </div>
              {renderWidthSelector()}
@@ -507,14 +508,14 @@ const Inspector = () => {
            <>
             <div className="space-y-2">
                <Label>Heading</Label>
-               <Input value={props.heading} onChange={(e) => handleChange('heading', e.target.value)} />
+               <MarkdownEditor value={props.heading} onChange={(val) => handleChange('heading', val)} rows={2} />
             </div>
             <div className="space-y-2">
                <Label>Content</Label>
-               <Textarea 
-                 className="min-h-[150px]" 
+               <MarkdownEditor 
                  value={props.content} 
-                 onChange={(e) => handleChange('content', e.target.value)} 
+                 onChange={(val) => handleChange('content', val)} 
+                 rows={5}
                />
             </div>
             <div className="space-y-2 border-t border-border pt-4">
@@ -789,6 +790,14 @@ const Inspector = () => {
       return (
         <div className="space-y-4">
           <div className="space-y-2">
+            <Label>Section Title</Label>
+            <Input 
+              value={props.title || ''} 
+              onChange={(e) => updateProps({ title: e.target.value })}
+              placeholder="e.g. Connect with me"
+            />
+          </div>
+          <div className="space-y-2">
             <Label>Style</Label>
             <Select value={props.style} onChange={(e) => handleChange('style', e.target.value)}>
               {BADGE_STYLES.map(s => <option key={s} value={s}>{s}</option>)}
@@ -856,10 +865,10 @@ const Inspector = () => {
         return (
           <>
             <div className="space-y-2">
-              <Textarea 
-                className="min-h-[300px] font-mono text-xs" 
+              <MarkdownEditor 
                 value={props.markdown} 
-                onChange={(e) => handleChange('markdown', e.target.value)} 
+                onChange={(val) => handleChange('markdown', val)} 
+                rows={15}
               />
             </div>
             {renderWidthSelector()}
