@@ -34,7 +34,7 @@ import {
 import { ComponentType } from './types';
 
 const App = () => {
-  const { editorMode, setEditorMode, components, githubUsername, themeMode, toggleTheme, showSeparators, reorderComponents, addComponent, removeComponent, selectComponent, selectedId, updateComponentProps } = useStore();
+  const { editorMode, setEditorMode, components, githubUsername, themeMode, toggleTheme, reorderComponents, addComponent, removeComponent, selectComponent, selectedId, updateComponentProps } = useStore();
   const [copySuccess, setCopySuccess] = useState(false);
   const [isLeftOpen, setIsLeftOpen] = useState(true);
   const [isRightOpen, setIsRightOpen] = useState(true);
@@ -122,7 +122,7 @@ const App = () => {
   }, [themeMode]);
 
   const handleExport = () => {
-    const markdown = generateMarkdown(components, githubUsername, showSeparators);
+    const markdown = generateMarkdown(components, githubUsername);
     const blob = new Blob([markdown], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -133,7 +133,7 @@ const App = () => {
   };
 
   const handleCopy = () => {
-    const markdown = generateMarkdown(components, githubUsername, showSeparators);
+    const markdown = generateMarkdown(components, githubUsername);
     navigator.clipboard.writeText(markdown);
     setCopySuccess(true);
     setTimeout(() => setCopySuccess(false), 2000);

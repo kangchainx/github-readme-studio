@@ -58,7 +58,6 @@ export interface AppState {
   
   // Global Settings
   themeMode: 'dark' | 'light';
-  showSeparators: boolean;
   
   // Actions
   setGithubUsername: (username: string) => void;
@@ -69,6 +68,6 @@ export interface AppState {
   selectComponent: (id: string | null) => void;
   setEditorMode: (mode: EditorMode) => void; // New action
   toggleTheme: () => void;
-  toggleSeparators: () => void;
+
   importConfig: (json: string) => void;
 }
