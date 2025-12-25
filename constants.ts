@@ -106,10 +106,10 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
     icon: 'Table',
     description: 'Data grid.',
     defaultProps: {
-      headers: ['Feature', 'Status', 'Notes'],
+      headers: ['Column 1', 'Column 2', 'Column 3'],
       rows: [
-        ['Dark Mode', '✅', 'Fully supported'],
-        ['API', '🚧', 'In progress'],
+        ['Data 1', 'Data 2', 'Data 3'],
+        ['Data 4', 'Data 5', 'Data 6'],
       ],
       align: 'center',
       width: 'full',
@@ -215,6 +215,8 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
         { platform: 'github', username: '' },
         { platform: 'twitter', username: '' }
       ],
+      description: 'Connect with me',
+      title: 'Connect with me',
       width: 'full',
     }
   },
