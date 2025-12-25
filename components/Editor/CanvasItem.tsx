@@ -5,12 +5,12 @@ import { useStore } from '../../store';
 import { UserCircleIcon } from '@phosphor-icons/react';
 import { generateBadgeUrl } from '../../lib/markdown';
 import { SOCIAL_PLATFORMS } from '../../constants';
+import { marked } from 'marked';
 
 interface CanvasItemProps {
   component: ComponentInstance;
   isSelected: boolean;
   onSelect: (id: string) => void;
-  hasSeparator?: boolean;
 }
 
 // Visual Renderer: Renders a "WYSIWYG-like" preview for the Builder Mode
@@ -35,7 +35,10 @@ const ComponentRenderer = React.memo(({ component }: { component: ComponentInsta
       };
       return (
         <div className={`p-4 ${alignClass}`}>
-          <Tag className={`${sizes[level] || sizes[1]} text-foreground`}>{props.content}</Tag>
+          <Tag 
+            className={`${sizes[level] || sizes[1]} text-foreground`}
+            dangerouslySetInnerHTML={{ __html: marked.parseInline(props.content || '') }}
+          />
         </div>
       );
     }
@@ -44,19 +47,24 @@ const ComponentRenderer = React.memo(({ component }: { component: ComponentInsta
       const alignClass = props.align === 'center' ? 'text-center' : 'text-left';
       return (
         <div className={`p-4 ${alignClass}`}>
-          <h1 className="text-3xl font-bold text-foreground flex items-center gap-2 justify-center">
-            {props.title} 
-          </h1>
-          <p className="text-muted mt-2 text-lg">{props.subtitle}</p>
+          <h1 
+            className="text-3xl font-bold text-foreground flex items-center gap-2 justify-center"
+            dangerouslySetInnerHTML={{ __html: marked.parseInline(props.title || '') }}
+          />
+          <p 
+            className="text-muted mt-2 text-lg"
+            dangerouslySetInnerHTML={{ __html: marked.parseInline(props.subtitle || '') }}
+          />
         </div>
       );
     }
     
     case ComponentType.TEXT:
       return (
-        <div className="p-4 text-foreground/90 whitespace-pre-wrap leading-relaxed">
-          {props.content}
-        </div>
+        <div 
+          className="p-4 text-foreground/90 whitespace-pre-wrap leading-relaxed prose prose-zinc dark:prose-invert max-w-none"
+          dangerouslySetInnerHTML={{ __html: marked.parse(props.content || '') }}
+        />
       );
 
     case ComponentType.LIST: {
@@ -64,9 +72,9 @@ const ComponentRenderer = React.memo(({ component }: { component: ComponentInsta
       const listClass = props.type === 'ordered' ? 'list-decimal ml-6' : 'list-disc ml-6';
       return (
         <div className="p-4">
-          <ListTag className={`${listClass} text-foreground/90 space-y-1`}>
+          <ListTag className={`${listClass} text-foreground/90 space-y-1 prose prose-zinc dark:prose-invert max-w-none`}>
             {(props.items || []).map((item: string, i: number) => (
-              <li key={i}>{item}</li>
+              <li key={i} dangerouslySetInnerHTML={{ __html: marked.parseInline(item || '') }} />
             ))}
           </ListTag>
         </div>
@@ -90,8 +98,14 @@ const ComponentRenderer = React.memo(({ component }: { component: ComponentInsta
       return (
         <div className={`flex flex-col md:flex-row gap-6 p-4 items-start ${props.imageAlign === 'left' ? 'md:flex-row-reverse' : ''}`}>
            <div className="flex-1 min-w-0">
-             <h3 className="text-xl font-bold text-foreground mb-2">{props.heading}</h3>
-             <p className="text-foreground/80 leading-relaxed whitespace-pre-wrap break-words">{props.content}</p>
+             <h3 
+               className="text-xl font-bold text-foreground mb-2"
+               dangerouslySetInnerHTML={{ __html: marked.parseInline(props.heading || '') }}
+             />
+             <div 
+               className="text-foreground/80 leading-relaxed whitespace-pre-wrap break-words prose prose-zinc dark:prose-invert max-w-none text-sm"
+               dangerouslySetInnerHTML={{ __html: marked.parse(props.content || '') }}
+             />
            </div>
            <div className="shrink-0">
              <img 
@@ -156,7 +170,7 @@ const ComponentRenderer = React.memo(({ component }: { component: ComponentInsta
       return (
         <div className="p-4">
            <h3 className="text-xl font-bold text-foreground mb-3 font-mono">Tech Stack</h3>
-           <div className="flex flex-wrap gap-2">
+           <div className="flex flex-wrap gap-2 justify-center">
               {(props.technologies || []).map((t: string) => {
                  const badgeUrl = generateBadgeUrl(t, props.style || 'for-the-badge');
                  return (
@@ -172,21 +186,24 @@ const ComponentRenderer = React.memo(({ component }: { component: ComponentInsta
 
     case ComponentType.SOCIALS:
       return (
-        <div className="p-4 flex justify-center gap-2 flex-wrap">
-           {(props.items || []).map((item: any, i: number) => {
-              if (!item.username) return null;
-              const platformId = (item.platform || '').toLowerCase();
-              const platformConfig = SOCIAL_PLATFORMS.find(p => p.id.toLowerCase() === platformId) || 
-                                    { label: item.platform, color: '181717', logo: platformId };
-              
-              const badgeUrl = `https://img.shields.io/badge/-${encodeURIComponent(platformConfig.label)}-${platformConfig.color}?style=${props.style}&logo=${platformConfig.logo.toLowerCase()}&logoColor=white`;
-              return (
-                <img key={i} src={badgeUrl} alt={item.platform} className="h-7" />
-              );
-           })}
-           {(props.items || []).every((i: any) => !i.username) && (
-              <span className="text-sm text-muted italic">Add usernames in the inspector...</span>
-           )}
+        <div className="p-4">
+           {props.title && <h3 className="text-xl font-bold text-foreground mb-3 font-mono">{props.title}</h3>}
+           <div className="flex justify-center gap-2 flex-wrap">
+             {(props.items || []).map((item: any, i: number) => {
+                if (!item.username) return null;
+                const platformId = (item.platform || '').toLowerCase();
+                const platformConfig = SOCIAL_PLATFORMS.find(p => p.id.toLowerCase() === platformId) || 
+                                      { label: item.platform, color: '181717', logo: platformId };
+                
+                const badgeUrl = `https://img.shields.io/badge/-${encodeURIComponent(platformConfig.label)}-${platformConfig.color}?style=${props.style}&logo=${platformConfig.logo.toLowerCase()}&logoColor=white`;
+                return (
+                  <img key={i} src={badgeUrl} alt={item.platform} className="h-7" />
+                );
+             })}
+             {(props.items || []).every((i: any) => !i.username) && (
+                <span className="text-sm text-muted italic">Add usernames in the inspector...</span>
+             )}
+           </div>
         </div>
       );
     
@@ -217,8 +234,8 @@ const ComponentRenderer = React.memo(({ component }: { component: ComponentInsta
 
     case ComponentType.PROJECT_DEMO:
       return (
-        <div className="p-4 flex flex-col items-center text-center gap-3">
-          <h3 className="text-lg font-semibold text-foreground">{props.title || 'Project Demo'}</h3>
+        <div className="p-4 flex flex-col gap-3">
+          <h3 className="text-lg font-semibold text-foreground text-left">{props.title || 'Project Demo'}</h3>
           <div className="w-full flex justify-center">
             {props.gifUrl ? (
               <img 
@@ -239,9 +256,10 @@ const ComponentRenderer = React.memo(({ component }: { component: ComponentInsta
     case ComponentType.BLOCKQUOTE:
       return (
         <div className="p-4">
-          <blockquote className="border-l-4 border-primary/50 pl-4 py-1 text-muted italic">
-            {props.content}
-          </blockquote>
+          <blockquote 
+            className="border-l-4 border-primary/50 pl-4 py-1 text-muted italic prose prose-zinc dark:prose-invert max-w-none"
+            dangerouslySetInnerHTML={{ __html: marked.parse(props.content || '') }}
+          />
         </div>
       );
 
@@ -313,11 +331,12 @@ const ComponentRenderer = React.memo(({ component }: { component: ComponentInsta
            <details className="group border border-border rounded-lg bg-surface/30 open:bg-surface/50 transition-colors">
              <summary className="cursor-pointer p-3 font-medium flex items-center gap-2 select-none group-open:border-b group-open:border-border">
                <span className="opacity-70 group-hover:opacity-100 transition-opacity">▶</span>
-               {props.summary}
+               <span dangerouslySetInnerHTML={{ __html: marked.parseInline(props.summary || '') }} />
              </summary>
-             <div className="p-3 text-sm text-foreground/80 whitespace-pre-wrap">
-               {props.content}
-             </div>
+             <div 
+               className="p-3 text-sm text-foreground/80 whitespace-pre-wrap prose prose-zinc dark:prose-invert max-w-none"
+               dangerouslySetInnerHTML={{ __html: marked.parse(props.content || '') }}
+             />
            </details>
         </div>
       );
@@ -350,7 +369,7 @@ const ComponentRenderer = React.memo(({ component }: { component: ComponentInsta
   }
 });
 
-export const CanvasItem: React.FC<CanvasItemProps> = ({ component, isSelected, onSelect, hasSeparator }) => {
+export const CanvasItem: React.FC<CanvasItemProps> = ({ component, isSelected, onSelect }) => {
   const {
     attributes,
     listeners,
@@ -398,12 +417,6 @@ export const CanvasItem: React.FC<CanvasItemProps> = ({ component, isSelected, o
         <ComponentRenderer component={component} />
       </div>
 
-      {/* Separator Visual (if enabled) */}
-      {hasSeparator && !isDragging && (
-        <div className="px-4 pb-2 w-full">
-           <hr className="border-border border-dashed" />
-        </div>
-      )}
 
       {/* Type Badge */}
       <div className="absolute right-2 top-2 px-1.5 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider text-muted bg-surface border border-border pointer-events-none">

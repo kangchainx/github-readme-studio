@@ -27,7 +27,6 @@ export const useStore = create<AppState>((set) => ({
   editorMode: 'builder', // Default to Builder (Low-code) mode
   githubUsername: '',
   themeMode: getSystemTheme(), // Default to system preference
-  showSeparators: true, // Default to true
 
   setGithubUsername: (username: string) => set({ githubUsername: username }),
 
@@ -85,8 +84,7 @@ export const useStore = create<AppState>((set) => ({
     return { themeMode: newMode };
   }),
 
-  toggleSeparators: () => set((state) => ({ showSeparators: !state.showSeparators })),
-  
+
   importConfig: (json: string) => {
     try {
       const data = JSON.parse(json);
@@ -98,7 +96,6 @@ export const useStore = create<AppState>((set) => ({
             components: data.components, 
             githubUsername: data.githubUsername || '', 
             selectedId: null,
-            showSeparators: data.showSeparators !== undefined ? data.showSeparators : true
          });
       }
     } catch (e) {

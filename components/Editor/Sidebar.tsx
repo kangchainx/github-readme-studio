@@ -9,7 +9,7 @@ import {
   QuestionIcon,
   MagnifyingGlassIcon
 } from '@phosphor-icons/react';
-import { Input, Label, Switch } from '../ui/UIComponents';
+import { Input, Label } from '../ui/UIComponents';
 import { ComponentType } from '../../types';
 
 const OnboardingTooltip = ({ onComplete }: { onComplete: () => void }) => {
@@ -53,7 +53,7 @@ const OnboardingTooltip = ({ onComplete }: { onComplete: () => void }) => {
 
 
 const Sidebar = () => {
-  const { addComponent, githubUsername, setGithubUsername, showSeparators, toggleSeparators } = useStore();
+  const { addComponent, githubUsername, setGithubUsername } = useStore();
   const [activeTab, setActiveTab] = useState<'basic' | 'advanced'>('basic');
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -106,12 +106,6 @@ const Sidebar = () => {
             />
           </div>
 
-          {/* Global Toggles */}
-          <div className="flex items-center justify-between">
-             <Label className="cursor-pointer" onClick={toggleSeparators}>Add Separators</Label>
-             <Switch checked={showSeparators} onCheckedChange={toggleSeparators} />
-          </div>
-          <p className="text-[10px] text-muted">Automatically adds a line break or separator between components.</p>
         </div>
       </div>
 
@@ -152,7 +146,7 @@ const Sidebar = () => {
           {filteredComponents.map((def, index) => {
              // Try searching for the icon with 'Icon' suffix first, then fallback to literal name or QuestionIcon
              const Icon = (Icons as any)[`${def.icon}Icon`] || (Icons as any)[def.icon] || QuestionIcon;
-             const requiresUsername = def.type === ComponentType.STATS || def.type === ComponentType.HEADER;
+             const requiresUsername = [ComponentType.CORE_STATS, ComponentType.STREAK_STATS, ComponentType.REPO_CARD, ComponentType.HEADER].includes(def.type);
              const isDisabled = requiresUsername && !githubUsername;
 
              return (

@@ -9,13 +9,13 @@ import { marked } from 'marked'; // Use marked for robust parsing
 import { GhostIcon } from '@phosphor-icons/react';
 
 const Canvas = () => {
-  const { components, selectedId, selectComponent, editorMode, githubUsername, showSeparators, themeMode } = useStore();
+  const { components, selectedId, selectComponent, editorMode, githubUsername, themeMode } = useStore();
 
   // handleDragEnd moved to App.tsx
 
   // 1. Preview Mode: Render Final Markdown Output using marked and github-markdown-css + tailwind prose
   if (editorMode === 'preview') {
-    const markdown = generateMarkdown(components, githubUsername, showSeparators);
+    const markdown = generateMarkdown(components, githubUsername);
     // Parse markdown to HTML
     const htmlContent = marked.parse(markdown) as string;
 
@@ -33,7 +33,7 @@ const Canvas = () => {
 
   // 2. Source Mode: Render Raw Markdown
   if (editorMode === 'source') {
-    const markdown = generateMarkdown(components, githubUsername, showSeparators);
+    const markdown = generateMarkdown(components, githubUsername);
     return (
       <div className="flex-1 bg-background p-6 overflow-hidden flex flex-col">
         <div className="flex-1 rounded-lg border border-border bg-surface/50 p-1 overflow-hidden shadow-inner">
@@ -78,13 +78,12 @@ const Canvas = () => {
             strategy={rectSortingStrategy}
           >
             <div className="flex flex-wrap gap-4 items-start">
-              {components.map((component, index) => (
+              {components.map((component) => (
                 <CanvasItem 
                   key={component.id} 
                   component={component} 
                   isSelected={selectedId === component.id}
                   onSelect={selectComponent}
-                  hasSeparator={showSeparators && index < components.length - 1}
                 />
               ))}
             </div>

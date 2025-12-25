@@ -98,7 +98,7 @@ export const renderComponentContent = (component: ComponentInstance, globalUsern
 
     case ComponentType.PROJECT_DEMO: {
       if (!props.gifUrl) return '';
-      return `<div align="center">\n  <h3>${props.title || 'Project Demo'}</h3>\n  <img src="${props.gifUrl}" alt="Project Demo" width="100%" />\n</div>`;
+      return `### ${props.title || 'Project Demo'}\n\n<div align="center">\n  <img src="${props.gifUrl}" alt="Project Demo" width="100%" />\n</div>`;
     }
 
     case ComponentType.CORE_STATS:
@@ -131,9 +131,12 @@ export const renderComponentContent = (component: ComponentInstance, globalUsern
 
     case ComponentType.TECH_STACK: {
        const badges = (props.technologies || [])
-         .map((tech: string) => `![${tech}](${generateBadgeUrl(tech, props.style || 'for-the-badge')})`)
+         .map((tech: string) => {
+           const badgeUrl = generateBadgeUrl(tech, props.style || 'for-the-badge');
+           return `<img src="${badgeUrl}" alt="${tech}" />`;
+         })
          .join(' ');
-       return `### Tech Stack\n\n${badges}`;
+       return `### Tech Stack\n\n<p align="center">\n  ${badges}\n</p>`;
     }
 
     case ComponentType.SOCIALS: {
@@ -145,10 +148,20 @@ export const renderComponentContent = (component: ComponentInstance, globalUsern
                                 { label: item.platform, color: '181717', logo: platformId };
           
           const badgeUrl = `https://img.shields.io/badge/-${encodeURIComponent(platformConfig.label)}-${platformConfig.color}?style=${props.style}&logo=${platformConfig.logo.toLowerCase()}&logoColor=white`;
-          return `[<img src="${badgeUrl}" />](https://${item.platform}.com/${item.username})`;
+          
+          let profileUrl = item.username;
+          if (!profileUrl.startsWith('http')) {
+             const domains: Record<string, string> = { 'twitter': 'x.com', 'devto': 'dev.to', 'stack-overflow': 'stackoverflow.com/users' };
+             const domain = domains[platformId] || `${platformId}.com`;
+             profileUrl = `https://${domain}/${item.username}`;
+          }
+          
+          return `<a href="${profileUrl}" target="_blank"><img src="${badgeUrl}" alt="${item.platform}" /></a>`;
         })
         .join(' ');
-      return `<div align="center">\n  ${links}\n</div>`;
+      
+      const titleMarkdown = props.title ? `### ${props.title}\n\n` : '';
+      return `${titleMarkdown}<p align="center">\n  ${links}\n</p>`;
     }
 
     case ComponentType.IMAGE: {
@@ -205,7 +218,7 @@ export const renderComponentContent = (component: ComponentInstance, globalUsern
   }
 };
 
-export const generateMarkdown = (components: ComponentInstance[], globalUsername: string = '', showSeparators: boolean = true): string => {
+export const generateMarkdown = (components: ComponentInstance[], globalUsername: string = ''): string => {
   let markdown = '';
   
   for (let i = 0; i < components.length; i++) {
@@ -229,14 +242,10 @@ export const generateMarkdown = (components: ComponentInstance[], globalUsername
         currentBlock = `\n${content1}\n`;
       }
     } else {
-      currentBlock = `\n${renderComponentContent(component, globalUsername)}\n<br />\n`;
+      currentBlock = `\n${renderComponentContent(component, globalUsername)}\n`;
     }
 
     markdown += currentBlock;
-
-    if (showSeparators && i < components.length - 1) {
-       markdown += '\n---\n';
-    }
   }
 
   return markdown;
