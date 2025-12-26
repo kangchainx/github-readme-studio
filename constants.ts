@@ -1,6 +1,7 @@
 import { ComponentDefinition, ComponentType } from './types';
 
 export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
+  // --- BASIC COMPONENTS ---
   {
     type: ComponentType.HEADING,
     category: 'basic',
@@ -26,6 +27,31 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
     }
   },
   {
+    type: ComponentType.IMAGE,
+    category: 'basic',
+    label: 'Image',
+    icon: 'Image',
+    description: 'Embed an image or GIF.',
+    defaultProps: {
+      src: 'https://picsum.photos/800/400',
+      alt: 'Banner',
+      align: 'center',
+      width: '100%',
+      widthMode: 'full',
+    }
+  },
+  {
+    type: ComponentType.BREAKER,
+    category: 'basic',
+    label: 'Separator',
+    icon: 'Minus',
+    description: 'Horizontal line or spacing.',
+    defaultProps: {
+      variant: 'line',
+      width: 'full',
+    }
+  },
+  {
     type: ComponentType.LIST,
     category: 'basic',
     label: 'Bullet List',
@@ -46,17 +72,6 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
     defaultProps: {
       items: ['First step', 'Second step', 'Third step'],
       type: 'ordered',
-      width: 'full',
-    }
-  },
-  {
-    type: ComponentType.BLOCKQUOTE,
-    category: 'basic',
-    label: 'Blockquote',
-    icon: 'Quotes',
-    description: 'Highlighted quote text.',
-    defaultProps: {
-      content: 'Knowledge is power.',
       width: 'full',
     }
   },
@@ -86,20 +101,6 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
     }
   },
   {
-    type: ComponentType.IMAGE_LINK,
-    category: 'basic',
-    label: 'Image Link',
-    icon: 'LinkBreak', // Or another suitable icon
-    description: 'Image that links to a URL.',
-    defaultProps: {
-      src: 'https://picsum.photos/200/50',
-      url: 'https://example.com',
-      alt: 'Clickable Image',
-      align: 'center',
-      width: 'full',
-    }
-  },
-  {
     type: ComponentType.TABLE,
     category: 'basic',
     label: 'Table',
@@ -116,6 +117,17 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
     }
   },
   {
+    type: ComponentType.BLOCKQUOTE,
+    category: 'basic',
+    label: 'Blockquote',
+    icon: 'Quotes',
+    description: 'Highlighted quote text.',
+    defaultProps: {
+      content: 'Knowledge is power.',
+      width: 'full',
+    }
+  },
+  {
     type: ComponentType.DETAILS,
     category: 'basic',
     label: 'Collapsible',
@@ -128,27 +140,67 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
     }
   },
   {
-    type: ComponentType.IMAGE,
+    type: ComponentType.IMAGE_LINK,
     category: 'basic',
-    label: 'Image',
-    icon: 'Image',
-    description: 'Embed an image or GIF.',
+    label: 'Image Link',
+    icon: 'LinkBreak',
+    description: 'Image that links to a URL.',
     defaultProps: {
-      src: 'https://picsum.photos/800/400',
-      alt: 'Banner',
+      src: 'https://picsum.photos/200/50',
+      url: 'https://example.com',
+      alt: 'Clickable Image',
       align: 'center',
-      width: '100%',
-      widthMode: 'full',
+      width: 'full',
+    }
+  },
+
+  // --- ADVANCED COMPONENTS ---
+  {
+    type: ComponentType.ABOUT_ME,
+    category: 'advanced',
+    label: 'About Me',
+    icon: 'User',
+    description: 'Introduction with text and optional image.',
+    defaultProps: {
+      title: 'About Me',
+      titleIcon: '✨',
+      content: 'I am a passionate developer who loves building open-source tools.',
+      showImage: false,
+      imageSrc: 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjR4M2Z4M2ZiM3oxM3oxM3oxM3oxM3oxM3cxM3oxMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/L8K62iTDkzGX6/giphy.gif',
+      imageAlign: 'right',
+      imageWidth: '300',
+      width: 'full',
     }
   },
   {
-    type: ComponentType.BREAKER,
-    category: 'basic',
-    label: 'Separator',
-    icon: 'Minus',
-    description: 'Horizontal line or spacing.',
+    type: ComponentType.TECH_STACK,
+    category: 'advanced',
+    label: 'Tech Stack',
+    icon: 'Stack',
+    description: 'Showcase your skills with badges.',
     defaultProps: {
-      variant: 'line',
+      style: 'for-the-badge',
+      technologies: ['TypeScript'],
+      title: 'Tech Stack',
+      titleIcon: '🛠️',
+      width: 'full',
+    }
+  },
+  {
+    type: ComponentType.SOCIALS,
+    category: 'advanced',
+    label: 'Social Links',
+    icon: 'ShareNetwork',
+    description: 'Link to your other profiles.',
+    defaultProps: {
+      style: 'flat-square',
+      items: [
+        { platform: 'github', username: '' },
+        { platform: 'twitter', username: '' }
+      ],
+      description: 'Connect with me',
+      title: 'Connect with me',
+      titleIcon: '🤝',
       width: 'full',
     }
   },
@@ -179,6 +231,21 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
     }
   },
   {
+    type: ComponentType.PROJECT_DEMO,
+    category: 'advanced',
+    label: 'Project Showcase',
+    icon: 'PlayCircle',
+    description: 'Showcase your projects in a grid.',
+    defaultProps: {
+      title: 'My Project',
+      titleIcon: '🚀',
+      projects: [
+        { title: 'Project Demo', image: 'https://media.giphy.com/media/cfuL5gqFDreXxkWQ4o/giphy.gif', link: '' }
+      ],
+      width: 'full',
+    }
+  },
+  {
     type: ComponentType.REPO_CARD,
     category: 'advanced',
     label: 'Repo Card',
@@ -188,47 +255,7 @@ export const COMPONENT_DEFINITIONS: ComponentDefinition[] = [
       repo: '',
       theme: 'radical',
       hideBorder: true,
-      width: 'full',
-    }
-  },
-  {
-    type: ComponentType.TECH_STACK,
-    category: 'advanced',
-    label: 'Tech Stack',
-    icon: 'Stack',
-    description: 'Showcase your skills with badges.',
-    defaultProps: {
-      style: 'for-the-badge',
-      technologies: ['TypeScript'],
-      width: 'full',
-    }
-  },
-  {
-    type: ComponentType.SOCIALS,
-    category: 'advanced',
-    label: 'Social Links',
-    icon: 'ShareNetwork',
-    description: 'Link to your other profiles.',
-    defaultProps: {
-      style: 'flat-square',
-      items: [
-        { platform: 'github', username: '' },
-        { platform: 'twitter', username: '' }
-      ],
-      description: 'Connect with me',
-      title: 'Connect with me',
-      width: 'full',
-    }
-  },
-  {
-    type: ComponentType.PROJECT_DEMO,
-    category: 'advanced',
-    label: 'Project Showcase',
-    icon: 'PlayCircle',
-    description: 'Centered GIF showcase with a custom title.',
-    defaultProps: {
-      title: 'Project Demo',
-      gifUrl: 'https://media.giphy.com/media/cfuL5gqFDreXxkWQ4o/giphy.gif',
+      titleIcon: '📂',
       width: 'full',
     }
   }

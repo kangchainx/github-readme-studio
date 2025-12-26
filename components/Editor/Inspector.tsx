@@ -580,6 +580,77 @@ const Inspector = () => {
         </div>
       );
 
+    case ComponentType.ABOUT_ME:
+      return (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Section Title</Label>
+            <Input 
+              value={(props.titleIcon || '') + (props.titleIcon ? ' ' : '') + (props.title || '')} 
+              onChange={(e) => {
+                const val = e.target.value;
+                // Try to extract emoji/icon from the beginning
+                const match = val.match(/^([\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}✨🚀🛠️🤝📂]+)\s*(.*)$/u);
+                if (match) {
+                  updateProps({ titleIcon: match[1], title: match[2] });
+                } else {
+                  updateProps({ titleIcon: '', title: val });
+                }
+              }} 
+              className="font-bold"
+              placeholder="✨ About Me"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Introduction</Label>
+            <MarkdownEditor
+              value={props.content || ''}
+              onChange={(content) => updateProps({ content })}
+              placeholder="Tell us about yourself..."
+            />
+          </div>
+          
+          <div className="p-3 border border-border rounded-lg bg-surface/50 space-y-3">
+             <div className="flex items-center justify-between">
+               <Label>Show Image</Label>
+               <Switch 
+                 checked={props.showImage !== false} 
+                 onCheckedChange={(checked) => updateProps({ showImage: checked })}
+               />
+             </div>
+             
+             {props.showImage !== false && (
+               <>
+                 <div className="space-y-2">
+                    <Label>Image / GIF URL</Label>
+                    <Input value={props.imageSrc || ''} onChange={(e) => updateProps({ imageSrc: e.target.value })} placeholder="Image URL" />
+                 </div>
+                 <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-2">
+                       <Label>Width (px)</Label>
+                       <Input 
+                         type="number" 
+                         value={props.imageWidth || '300'} 
+                         onChange={(e) => updateProps({ imageWidth: e.target.value })} 
+                         min="50"
+                       />
+                    </div>
+                    <div className="space-y-2">
+                       <Label>Align</Label>
+                       <Select value={props.imageAlign || 'right'} onChange={(e) => handleChange('imageAlign', e.target.value)}>
+                         <option value="left">Left</option>
+                         <option value="right">Right</option>
+                       </Select>
+                    </div>
+                 </div>
+               </>
+             )}
+          </div>
+          
+          {renderWidthSelector()}
+        </div>
+      );
+
     case ComponentType.STREAK_STATS:
       return (
         <div className="space-y-4">
@@ -648,11 +719,29 @@ const Inspector = () => {
         
         return (
           <>
-            <div className="space-y-2">
-               <Label>Badge Style</Label>
-               <Select value={props.style} onChange={(e) => handleChange('style', e.target.value)}>
-                 {BADGE_STYLES.map(s => <option key={s} value={s}>{s}</option>)}
-               </Select>
+            <div className="space-y-4">
+               <div className="space-y-2">
+                <Label>Section Title</Label>
+                <Input 
+                  value={(props.titleIcon || '') + (props.titleIcon ? ' ' : '') + (props.title || '')} 
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    const match = val.match(/^([\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}✨🚀🛠️🤝📂]+)\s*(.*)$/u);
+                    if (match) {
+                      updateProps({ titleIcon: match[1], title: match[2] });
+                    } else {
+                      updateProps({ titleIcon: '', title: val });
+                    }
+                  }}
+                  placeholder="🛠️ Tech Stack"
+                />
+              </div>
+              <div className="space-y-2">
+                 <Label>Badge Style</Label>
+                 <Select value={props.style} onChange={(e) => handleChange('style', e.target.value)}>
+                   {BADGE_STYLES.map(s => <option key={s} value={s}>{s}</option>)}
+                 </Select>
+              </div>
             </div>
             
             {/* Selected Techs */}
@@ -769,18 +858,83 @@ const Inspector = () => {
           <div className="space-y-2">
             <Label>Section Title</Label>
             <Input 
-              value={props.title || ''} 
-              onChange={(e) => updateProps({ title: e.target.value })}
-              placeholder="e.g. Project Demo"
+              value={(props.titleIcon || '') + (props.titleIcon ? ' ' : '') + (props.title || '')} 
+              onChange={(e) => {
+                const val = e.target.value;
+                const match = val.match(/^([\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}✨🚀🛠️🤝📂]+)\s*(.*)$/u);
+                if (match) {
+                  updateProps({ titleIcon: match[1], title: match[2] });
+                } else {
+                  updateProps({ titleIcon: '', title: val });
+                }
+              }}
+              placeholder="🚀 My Project"
             />
           </div>
-          <div className="space-y-2">
-            <Label>GIF / Image URL</Label>
-            <Input 
-              value={props.gifUrl || ''} 
-              onChange={(e) => updateProps({ gifUrl: e.target.value })}
-              placeholder="https://..."
-            />
+
+          <div className="space-y-3">
+             <div className="flex items-center justify-between">
+               <Label>Projects</Label>
+               <Button 
+                 variant="secondary" 
+                 size="sm" 
+                 className="h-7 text-[10px] px-2"
+                 onClick={() => updateProps({ 
+                   projects: [...(props.projects || []), { title: '', image: '', link: '' }] 
+                 })}
+               >
+                 + Add Project
+               </Button>
+             </div>
+             {(props.projects || []).map((project: any, idx: number) => (
+               <div key={idx} className="space-y-2 p-3 border border-border rounded-lg bg-surface/50">
+                 <div className="flex items-center justify-end">
+                   <Button 
+                     variant="ghost" 
+                     size="icon" 
+                     className="shrink-0 text-red-500 hover:text-red-400 h-6 w-6"
+                     onClick={() => {
+                       const newProjects = props.projects.filter((_: any, i: number) => i !== idx);
+                       updateProps({ projects: newProjects });
+                     }}
+                   >
+                     <TrashIcon size={14} />
+                   </Button>
+                 </div>
+                 <div className="space-y-2">
+                   <Input 
+                     value={project.title || ''} 
+                     onChange={(e) => {
+                       const newProjects = [...props.projects];
+                       newProjects[idx] = { ...newProjects[idx], title: e.target.value };
+                       updateProps({ projects: newProjects });
+                     }}
+                     placeholder="Project Title"
+                     className="h-8 text-xs font-bold"
+                   />
+                   <Input 
+                     value={project.image || ''} 
+                     onChange={(e) => {
+                       const newProjects = [...props.projects];
+                       newProjects[idx] = { ...newProjects[idx], image: e.target.value };
+                       updateProps({ projects: newProjects });
+                     }}
+                     placeholder="Image / GIF URL"
+                     className="h-8 text-xs"
+                   />
+                   <Input 
+                     value={project.link || ''} 
+                     onChange={(e) => {
+                       const newProjects = [...props.projects];
+                       newProjects[idx] = { ...newProjects[idx], link: e.target.value };
+                       updateProps({ projects: newProjects });
+                     }}
+                     placeholder="Project Link (Optional)"
+                     className="h-8 text-xs"
+                   />
+                 </div>
+               </div>
+             ))}
           </div>
           {renderWidthSelector()}
         </div>
@@ -789,14 +943,22 @@ const Inspector = () => {
     case ComponentType.SOCIALS:
       return (
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label>Section Title</Label>
-            <Input 
-              value={props.title || ''} 
-              onChange={(e) => updateProps({ title: e.target.value })}
-              placeholder="e.g. Connect with me"
-            />
-          </div>
+           <div className="space-y-2">
+             <Label>Section Title</Label>
+             <Input 
+               value={(props.titleIcon || '') + (props.titleIcon ? ' ' : '') + (props.title || '')} 
+               onChange={(e) => {
+                 const val = e.target.value;
+                 const match = val.match(/^([\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}✨🚀🛠️🤝📂]+)\s*(.*)$/u);
+                 if (match) {
+                   updateProps({ titleIcon: match[1], title: match[2] });
+                 } else {
+                   updateProps({ titleIcon: '', title: val });
+                 }
+               }}
+               placeholder="🤝 Connect with me"
+             />
+           </div>
           <div className="space-y-2">
             <Label>Style</Label>
             <Select value={props.style} onChange={(e) => handleChange('style', e.target.value)}>

@@ -169,7 +169,12 @@ const ComponentRenderer = React.memo(({ component }: { component: ComponentInsta
     case ComponentType.TECH_STACK:
       return (
         <div className="p-4">
-           <h3 className="text-xl font-bold text-foreground mb-3 font-mono">Tech Stack</h3>
+           {props.title && (
+             <h3 className="text-xl font-bold text-foreground mb-3 font-mono">
+               {props.titleIcon && <span className="mr-2">{props.titleIcon}</span>}
+               {props.title}
+             </h3>
+           )}
            <div className="flex flex-wrap gap-2 justify-center">
               {(props.technologies || []).map((t: string) => {
                  const badgeUrl = generateBadgeUrl(t, props.style || 'for-the-badge');
@@ -187,7 +192,12 @@ const ComponentRenderer = React.memo(({ component }: { component: ComponentInsta
     case ComponentType.SOCIALS:
       return (
         <div className="p-4">
-           {props.title && <h3 className="text-xl font-bold text-foreground mb-3 font-mono">{props.title}</h3>}
+           {props.title && (
+             <h3 className="text-xl font-bold text-foreground mb-3 font-mono">
+               {props.titleIcon && <span className="mr-2">{props.titleIcon}</span>}
+               {props.title}
+             </h3>
+           )}
            <div className="flex justify-center gap-2 flex-wrap">
              {(props.items || []).map((item: any, i: number) => {
                 if (!item.username) return null;
@@ -232,26 +242,66 @@ const ComponentRenderer = React.memo(({ component }: { component: ComponentInsta
          </div>
        );
 
-    case ComponentType.PROJECT_DEMO:
+    case ComponentType.PROJECT_DEMO: {
+      // Backward compatibility hook
+      const projects = props.projects || (props.gifUrl ? [{ title: props.title, image: props.gifUrl, link: '' }] : []);
+      const gridCols = projects.length > 1 ? 'grid-cols-2' : 'grid-cols-1';
+
       return (
         <div className="p-4 flex flex-col gap-3">
-          <h3 className="text-lg font-semibold text-foreground text-left">{props.title || 'Project Demo'}</h3>
-          <div className="w-full flex justify-center">
-            {props.gifUrl ? (
-              <img 
-                src={props.gifUrl} 
-                alt="Project Demo" 
-                className="max-w-full rounded-md border border-border bg-background" 
-                style={{ maxHeight: '260px', objectFit: 'contain' }}
-              />
+          <h3 className="text-lg font-semibold text-foreground text-left">
+             {props.titleIcon && <span className="mr-2">{props.titleIcon}</span>}
+             {props.title || 'Project Showcase'}
+          </h3>
+          <div className={`grid ${gridCols} gap-4 w-full`}>
+            {projects.length > 0 ? (
+              projects.map((proj: any, i: number) => (
+                <div key={i} className="flex flex-col gap-2">
+                  <div className="rounded-md border border-border bg-background overflow-hidden">
+                     <img 
+                       src={proj.image} 
+                       alt={proj.title} 
+                       className="w-full h-auto object-cover" 
+                       style={{ maxHeight: '200px' }}
+                     />
+                  </div>
+                  {proj.title && <div className="text-center text-sm font-medium">{proj.title}</div>}
+                </div>
+              ))
             ) : (
-              <div className="w-full max-w-md h-40 border-2 border-dashed border-border rounded-lg flex items-center justify-center text-muted bg-surface/50 text-sm">
-                Paste a GIF URL to preview
-              </div>
+               <div className="w-full col-span-full h-40 border-2 border-dashed border-border rounded-lg flex items-center justify-center text-muted bg-surface/50 text-sm">
+                 Add projects in the inspector
+               </div>
             )}
           </div>
         </div>
       );
+    }
+
+
+
+    case ComponentType.ABOUT_ME: {
+      return (
+        <div className="p-4 flex flex-col gap-4">
+          <div className="flex items-center gap-2">
+             <h3 className="text-xl font-bold text-foreground font-mono">
+               {props.titleIcon && <span className="mr-2">{props.titleIcon}</span>}
+               {props.title || 'About Me'}
+             </h3>
+          </div>
+          <div className={`flex gap-6 ${props.imageAlign === 'left' ? 'flex-row-reverse' : 'flex-row'} items-start`}>
+             <div className="flex-1 text-sm text-foreground/90 leading-relaxed prose prose-sm dark:prose-invert max-w-none">
+                <ComponentRenderer component={{ ...props, type: ComponentType.MARKDOWN, props: { markdown: props.content, type: ComponentType.MARKDOWN } }} />
+             </div>
+             {props.showImage !== false && props.imageSrc && (
+               <div className="shrink-0 rounded-lg overflow-hidden border border-border bg-surface/50 shadow-sm" style={{ width: `${props.imageWidth || 300}px` }}>
+                 <img src={props.imageSrc} alt="About Me" className="w-full h-auto" />
+               </div>
+             )}
+          </div>
+        </div>
+      );
+    }
 
     case ComponentType.BLOCKQUOTE:
       return (

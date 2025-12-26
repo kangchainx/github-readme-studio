@@ -155,7 +155,7 @@ const App = () => {
             <div className="bg-primary/10 p-1.5 rounded-lg border border-primary/20">
                <HammerIcon className="text-primary" size={20} weight="fill" />
             </div>
-            <span className="font-bold text-lg tracking-tight hidden md:inline">GitHub HomePage Studio</span>
+            <span className="font-bold text-lg tracking-tight hidden md:inline">GitHub Studio</span>
           </div>
 
           {/* Center Mode Switcher */}
@@ -199,6 +199,17 @@ const App = () => {
               <DownloadSimpleIcon size={16} className="mr-2" />
               Export
             </Button>
+
+            <div className="flex items-center ml-2">
+              <iframe 
+                src="https://ghbtns.com/github-btn.html?user=kangchainx&repo=github-readme-studio&type=star&count=true" 
+                frameBorder="0" 
+                scrolling="0" 
+                width="100" 
+                height="20" 
+                title="GitHub Star"
+              ></iframe>
+            </div>
             
             {/* Toggle Inspector only when in Builder Mode */}
             {editorMode === 'builder' && (

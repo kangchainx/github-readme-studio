@@ -10,6 +10,7 @@ export enum ComponentType {
   SOCIALS = 'socials',
   IMAGE = 'image',
   MARKDOWN = 'markdown',
+  ABOUT_ME = 'about_me',
   PROJECT_DEMO = 'project_demo',
   HEADING = 'heading',
   LIST = 'list',
