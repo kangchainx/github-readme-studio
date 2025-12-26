@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://socialify.git.ci/kangchainx/github-readme-studio/image?custom_language=React&font=Jost&language=1&name=1&owner=1&pattern=Floating+Cogs&theme=Auto" width="100%" alt="GitHub Studio Banner" />
+<img src="public/logo/github-studio-logo.png" width="100%" alt="GitHub Studio Logo" />
 
 **A powerful, visual, drag-and-drop builder for creating professional GitHub Profile READMEs.**
 

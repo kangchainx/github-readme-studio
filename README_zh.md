@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://socialify.git.ci/kangchainx/github-readme-studio/image?custom_language=React&font=Jost&language=1&name=1&owner=1&pattern=Floating+Cogs&theme=Auto" width="100%" alt="GitHub Studio Banner" />
+<img src="public/logo/github-studio-logo.png" width="100%" alt="GitHub Studio Logo" />
 
 **一个功能强大、可视化、拖拽式的 GitHub 个人主页 (README) 生成器。**
 

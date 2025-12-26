@@ -7,7 +7,6 @@ import { generateMarkdown } from './lib/markdown';
 import { Button } from './components/ui/UIComponents';
 import { 
   SidebarSimpleIcon, 
-  HammerIcon, 
   SquaresFourIcon, 
   EyeIcon, 
   CodeIcon, 
@@ -152,10 +151,10 @@ const App = () => {
             <Button variant="ghost" size="icon" onClick={() => setIsLeftOpen(!isLeftOpen)} title="Toggle Library">
               <SidebarSimpleIcon size={20} className={!isLeftOpen ? 'text-muted' : 'text-primary'} />
             </Button>
-            <div className="bg-primary/10 p-1.5 rounded-lg border border-primary/20">
-               <HammerIcon className="text-primary" size={20} weight="fill" />
+            <div className="flex items-center">
+               <img src="/github-readme-studio/logo/github-studio-notext.png" alt="GitHub Studio" className="h-8 w-8 object-contain" />
             </div>
-            <span className="font-bold text-lg tracking-tight hidden md:inline">GitHub Studio</span>
+            <span className="font-bold text-lg tracking-tight hidden md:inline ml-[-4px]">GitHub Studio</span>
           </div>
 
           {/* Center Mode Switcher */}
