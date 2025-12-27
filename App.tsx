@@ -152,7 +152,7 @@ const App = () => {
               <SidebarSimpleIcon size={20} className={!isLeftOpen ? 'text-muted' : 'text-primary'} />
             </Button>
             <div className="flex items-center">
-               <img src="/github-readme-studio/logo/github-studio-notext.png" alt="GitHub Studio" className="h-8 w-8 object-contain" />
+               <img src="/logo/github-studio-notext.png" alt="GitHub Studio" className="h-8 w-8 object-contain" />
             </div>
             <span className="font-bold text-lg tracking-tight hidden md:inline ml-[-4px]">GitHub Studio</span>
           </div>
